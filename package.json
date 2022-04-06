@@ -1,0 +1,33 @@
+{
+  "name": "telegram-to-notion-bot",
+  "version": "1.0.0",
+  "main": "src/app.js",
+  "scripts": {
+    "dev": "nodemon src/app.js"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "notion",
+    "node.js",
+    "telegraf"
+  ],
+  "author": "FranP-Code",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "telegraf": "^4.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FranP-code/Telegram-to-Notion-Bot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FranP-code/Telegram-to-Notion-Bot/issues"
+  },
+  "homepage": "https://github.com/FranP-code/Telegram-to-Notion-Bot#readme",
+  "description": ""
+}
