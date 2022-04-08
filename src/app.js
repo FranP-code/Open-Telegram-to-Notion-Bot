@@ -1,4 +1,5 @@
-const { Bot, session } = require('grammy')
+const { Bot, session } = require('grammy');
+const DatabaseQuerys = require('./controller/DatabaseQuerys');
 require('dotenv').config()
 
 const bot = new Bot(process.env.BOT_TOKEN)
@@ -29,10 +30,25 @@ bot.use(async (ctx, next) => {
 bot.use(async (ctx, next) => {
     if (ctx.session.waitingForAuthCode) {
         
-        ctx.reply("Auth code added to database")
         ctx.session.waitingForAuthCode = false
+
+        const response = await DatabaseQuerys().uploadApiKey(ctx.from.id, ctx.message.text)
+
+        if (response.status === "error" && response.message === "Auth key not valid") {
+            ctx.reply("Auth code not valid")
+            return
+        }
         
-        return
+        if (response.status === "success"){
+            ctx.reply("Auth code registered 👍\n\nSend a message to *add it to the database you select*", {parse_mode: "MarkdownV2"})
+            return
+        }
+
+        if (response.status === "error") {
+            ctx.reply('Unknow error, please try again later')
+            return
+        }
+
     } else {
         await next()
     }

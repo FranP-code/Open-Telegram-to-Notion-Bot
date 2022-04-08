@@ -15,8 +15,10 @@
   "author": "FranP-Code",
   "license": "ISC",
   "dependencies": {
+    "@notionhq/client": "^1.0.4",
     "dotenv": "^16.0.0",
-    "grammy": "^1.7.2"
+    "grammy": "^1.7.2",
+    "mongoose": "^6.2.10"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
