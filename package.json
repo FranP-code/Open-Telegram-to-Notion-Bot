@@ -16,7 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.0.0",
-    "telegraf": "^4.7.0"
+    "grammy": "^1.7.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
