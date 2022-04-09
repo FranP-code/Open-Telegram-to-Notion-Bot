@@ -1,6 +1,6 @@
-require('./dbConnection')
-const { encrypt } = require('./crypto')
-const UserSchema = require('./schemas/UserSchema')
+require('../dbConnection')
+const { encrypt } = require('../crypto')
+const UserSchema = require('../schemas/UserSchema')
 
 async function addUser(userId, notionAuthKey) {
 

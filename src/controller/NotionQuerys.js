@@ -15,7 +15,6 @@ function NotionQuerys(authCode) {
                 }
             })
 
-            console.log(response)
             response.status = "success"
             return response
 
@@ -24,8 +23,70 @@ function NotionQuerys(authCode) {
         }
     }
 
+    async function returnAllDatabases() {
+
+        try {
+            const response = await notion.search({
+                filter: {
+                    value: "database",
+                    property: "object"
+                }
+            })
+
+            response.status = "success"
+            return response
+        } catch(err) {
+            console.log(err)
+            return {
+                status: "error"
+            }
+        }
+    }
+
+    async function addTextToDatabase(databaseId, text) {
+
+        try {
+            const response = await notion.pages.create({
+                parent: {
+                    database_id: databaseId
+                },
+                properties: {
+                    title: [
+                        {
+                            text: {
+                                content: text
+                            }
+                        }
+                    ]
+                }
+            })
+
+            response.status = "success"
+            return response
+
+        } catch (err) {
+            console.log(err)
+            return {
+                status: "error"
+            }
+        }
+    }
+
+    async function getDatabaseData(databaseId) {
+        try {
+            const response = await notion.databases.retrieve({database_id: databaseId})
+            return response
+        } catch (error) {
+            console.log(err)
+            return {status: "error"}
+        }
+    }
+
     return {
-        checkAuthCode
+        checkAuthCode,
+        returnAllDatabases,
+        addTextToDatabase,
+        getDatabaseData
     }
 }
 
