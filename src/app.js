@@ -16,6 +16,7 @@ bot.use(session({ initial: initialSesionValues }));
 bot.use(async (ctx, next) => {
     
     if (process.env.NODE_ENV !== "development") {
+        await next()
         return
     }
 
@@ -23,8 +24,6 @@ bot.use(async (ctx, next) => {
         ctx.reply('⚠️ Sorry, this bot is on development for now... \nStay alert for new updates! \nrepo: https://github.com/FranP-code/Telegram-to-Notion-Bot')
         return
     }
-
-    await next()
 })
 
 //Set a middleware for check if the bot is waiting the auth code
