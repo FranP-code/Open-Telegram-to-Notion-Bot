@@ -171,7 +171,7 @@ bot.on("callback_query:data", async ctx => {
     }, 500)
 
     ctx.reply("✅ *Done*", {parse_mode: "MarkdownV2"})
-    ctx.reply(`*${text}* added to *${response.databaseTitle}* database 👍`, {parse_mode: "MarkdownV2"})
+    ctx.reply(`<strong>${text}</strong> added to <strong>${response.databaseTitle}</strong> database 👍`, {parse_mode: "HTML"})
 })
 
 // Delete message function
