@@ -38,19 +38,16 @@ bot.use(async (ctx, next) => {
 
         if (response.status === "error" && response.message === "Auth key not valid") {
             ctx.reply("Auth code not valid, type /auth again")
-            // editMessage(ctx, ctx.update.message.message_id + 1, "Auth code not valid, type /auth again")
             return
         }
         
         if (response.status === "success"){
             ctx.reply("Auth code registered 👍\n\nSend a message to *add it to the database you select*", {parse_mode: "MarkdownV2"})
-            // editMessage(ctx, ctx.update.message.message_id + 1, "Auth code registered 👍\n\nSend a message to *add it to the database you select*")
             return
         }
 
         if (response.status === "error") {
             ctx.reply("'Unknow error, please try again later'")
-            // editMessage(ctx, ctx.update.message.message_id + 1, 'Unknow error, please try again later')
             return
         }
 
@@ -122,10 +119,17 @@ bot.on(':text', async ctx => {
                     return []
                 }
 
-                return [{
-                    text: `${obj.icon.emoji ? obj.icon.emoji + " " : ""}${obj.title[0].text.content}`,
-                    callback_data: "database_id" + obj.id
-                }]
+                if (obj.icon) {
+                    return [{
+                        text: `${obj.icon.emoji ? obj.icon.emoji + " " : ""}${obj.title[0].text.content}`,
+                        callback_data: "database_id" + obj.id
+                    }]
+                } else {
+                    return [{
+                        text: obj.title[0].text.content,
+                        callback_data: "database_id" + obj.id
+                    }]
+                }
             })
         },
         parse_mode: "MarkdownV2"
@@ -135,7 +139,6 @@ bot.on(':text', async ctx => {
 //Handle the text sended for the user
 bot.on("callback_query:data", async ctx => {
 
-    // editMessage(ctx, ctx.update.callback_query.message.message_id, "*Wait a moment*")
     ctx.reply("*Wait a moment*", {parse_mode: "MarkdownV2"})
 
     let id = ctx.update.callback_query.data
@@ -167,7 +170,6 @@ bot.on("callback_query:data", async ctx => {
         deleteMessage(ctx, ctx.update.callback_query.message.message_id + 1)
     }, 500)
 
-    // editMessage(ctx, ctx.update.callback_query.message.message_id, "✅ *Done*")
     ctx.reply("✅ *Done*", {parse_mode: "MarkdownV2"})
     ctx.reply(`*${text}* added to *${response.databaseTitle}* database 👍`, {parse_mode: "MarkdownV2"})
 })
@@ -176,10 +178,6 @@ bot.on("callback_query:data", async ctx => {
 async function deleteMessage(ctx, messageId) {
     await ctx.api.deleteMessage(ctx.chat.id, messageId)
 }
-
-// async function editMessage(ctx, messageId, newText) {
-//     await ctx.api.editMessageText(ctx.chat.id, messageId, newText, {parse_mode: "MarkdownV2"})
-// }
 
 bot.on(':sticker', ctx => {
     ctx.reply('❤️')
