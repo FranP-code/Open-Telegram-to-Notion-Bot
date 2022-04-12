@@ -15,6 +15,6 @@ Right now is on **beta version**, because it haves all the features needed but i
 - Copy icon from [feather](https://feathericons.com)
 - Main font is [Be Vietnam Pro](https://fonts.google.com/specimen/Be+Vietnam+Pro)
 
-## Adittional
+## Additional
 
-Dont forget to check also the [Telegram to Notion Bot's repository](https://github.com/FranP-code/Telegram-to-Notion-Bot).
+Dont forget to check also the [Telegram to Notion Bot](https://github.com/FranP-code/Telegram-to-Notion-Bot) repository.
