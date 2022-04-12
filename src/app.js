@@ -24,30 +24,33 @@ bot.use(async (ctx, next) => {
         ctx.reply('⚠️ Sorry, this bot is on development for now... \nStay alert for new updates! \nrepo: https://github.com/FranP-code/Telegram-to-Notion-Bot')
         return
     }
+
+    next()
 })
 
 //Set a middleware for check if the bot is waiting the auth code
 bot.use(async (ctx, next) => {
     if (ctx.session.waitingForAuthCode) {
 
-        ctx.reply("Loading")
-                
         ctx.session.waitingForAuthCode = false
 
         const response = await DatabaseQuerys().uploadApiKey(ctx.from.id, ctx.message.text)
 
         if (response.status === "error" && response.message === "Auth key not valid") {
-            editMessage(ctx, ctx.update.message.message_id + 1, "Auth code not valid, type /auth again")
+            ctx.reply("Auth code not valid, type /auth again")
+            // editMessage(ctx, ctx.update.message.message_id + 1, "Auth code not valid, type /auth again")
             return
         }
         
         if (response.status === "success"){
-            editMessage(ctx, ctx.update.message.message_id + 1, "Auth code registered 👍\n\nSend a message to *add it to the database you select*")
+            ctx.reply("Auth code registered 👍\n\nSend a message to *add it to the database you select*", {parse_mode: "MarkdownV2"})
+            // editMessage(ctx, ctx.update.message.message_id + 1, "Auth code registered 👍\n\nSend a message to *add it to the database you select*")
             return
         }
 
         if (response.status === "error") {
-            editMessage(ctx, ctx.update.message.message_id + 1, 'Unknow error, please try again later')
+            ctx.reply("'Unknow error, please try again later'")
+            // editMessage(ctx, ctx.update.message.message_id + 1, 'Unknow error, please try again later')
             return
         }
 
@@ -132,8 +135,9 @@ bot.on(':text', async ctx => {
 //Handle the text sended for the user
 bot.on("callback_query:data", async ctx => {
 
-    editMessage(ctx, ctx.update.callback_query.message.message_id, "*Wait a moment*")
-    
+    // editMessage(ctx, ctx.update.callback_query.message.message_id, "*Wait a moment*")
+    ctx.reply("*Wait a moment*", {parse_mode: "MarkdownV2"})
+
     let id = ctx.update.callback_query.data
 
     // Check if the data includes the prefix indicated
@@ -158,7 +162,13 @@ bot.on("callback_query:data", async ctx => {
         return
     }
 
-    editMessage(ctx, ctx.update.callback_query.message.message_id, "✅ *Done*")
+    setTimeout(() => {
+        deleteMessage(ctx, ctx.update.callback_query.message.message_id)
+        deleteMessage(ctx, ctx.update.callback_query.message.message_id + 1)
+    }, 500)
+
+    // editMessage(ctx, ctx.update.callback_query.message.message_id, "✅ *Done*")
+    ctx.reply("✅ *Done*", {parse_mode: "MarkdownV2"})
     ctx.reply(`*${text}* added to *${response.databaseTitle}* database 👍`, {parse_mode: "MarkdownV2"})
 })
 
@@ -167,9 +177,9 @@ async function deleteMessage(ctx, messageId) {
     await ctx.api.deleteMessage(ctx.chat.id, messageId)
 }
 
-async function editMessage(ctx, messageId, newText) {
-    await ctx.api.editMessageText(ctx.chat.id, messageId, newText, {parse_mode: "MarkdownV2"})
-}
+// async function editMessage(ctx, messageId, newText) {
+//     await ctx.api.editMessageText(ctx.chat.id, messageId, newText, {parse_mode: "MarkdownV2"})
+// }
 
 bot.on(':sticker', ctx => {
     ctx.reply('❤️')
