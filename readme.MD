@@ -12,9 +12,9 @@
     <img alt="GitHub forks" src="https://img.shields.io/github/forks/FranP-Code/Telegram-To-Notion-Bot?style=flat-square">
 </p>
 
-<br></br>
-<img src="https://i.ibb.co/pJ10w9j/Telegram-To-Notion-Bot-Demo-Acelerated.gif">
-<br></br>
+<p align="center">
+    <img src="https://i.ibb.co/pJ10w9j/Telegram-To-Notion-Bot-Demo-Acelerated.gif">
+</p>
 
 ## What can do this bot?
 
