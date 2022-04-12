@@ -1,9 +1,12 @@
 const Express = require('express')
 const app = Express()
-const port = (process.env.PORT || 3000)
+const port = (process.env.PORT || 3030)
 
 const axios = require('axios')
 require('dotenv').config()
+
+const favicon = require('serve-favicon');
+app.use(favicon(__dirname + '/public/favicon.ico'));
 
 const hbs = require('hbs')
 
@@ -12,11 +15,11 @@ app.set('view engine', 'hbs')
 
 app.use(Express.static('public'));
 
-app.get('/auth', async (req, res) => {
+app.get('/', (req, res) => {
+    res.render('index')
+})
 
-    console.log(req.query)
-    console.log(process.env.NOTION_INTEGRATION_ID)
-    console.log(process.env.NOTION_INTEGRATION_SECRET)
+app.get('/auth', async (req, res) => {
 
     async function requestAccessToken() {
         try {
@@ -71,6 +74,14 @@ app.get('/auth', async (req, res) => {
         success: response.status === 200 ? true : false,
         data: response.data
     })
+})
+
+app.get('/privacy-policy', (req, res) => {
+    res.render('privacy-policy')
+})
+
+app.get('/terms-of-use', (req, res)  => {
+    res.render('terms-of-use')
 })
 
 app.listen(port, () => console.log('port', port))

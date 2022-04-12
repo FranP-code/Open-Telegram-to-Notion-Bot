@@ -7,3 +7,15 @@ body {
     margin: 0vh 3vw;
     font-family: 'Be Vietnam Pro', sans-serif;
 }
+
+#beta-banner {
+    background-color: #F38181;
+    color: #393E46;
+
+    padding: 2vh 0.5vw;
+    margin: 0px -3vw;
+}
+
+#beta-banner p {
+    margin: 0;
+}
