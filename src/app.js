@@ -79,6 +79,10 @@ bot.command('auth', ctx => {
     })
 })
 
+bot.command('help', ctx => {
+    ctx.reply("The repository of this bot on <strong>Github</strong>: https://github.com/FranP-code/Telegram-to-Notion-Bot", {parse_mode: "HTML"})
+})
+
 // On the message sending, exec the main function of the bot
 bot.on(':text', async ctx => {
 
