@@ -11,6 +11,10 @@
     -webkit-user-select: all;
 }
 
+.request-success code {
+    overflow-wrap: anywhere;
+}
+
 .request-success img {
 
     width: 50px;
