@@ -1,6 +1,6 @@
 # Telegram to Notion Bot's website
 
-This is the platform complementary of the [Telegram to Notion Bot]().
+This is the complementary platform to the [Telegram to Notion Bot](https://t.me/TelegrmToNotionBot).
 
 <img src="https://i.ibb.co/2FPm3zk/Screenshot-from-2022-04-12-10-49-53.png">
 
@@ -8,13 +8,13 @@ Right now is on **beta version**, because it haves all the features needed but i
 
 ## Link
 
-**[Here](telegram-to-notion.herokuapp.com) you can visit it**
+**[Here](https://telegram-to-notion.herokuapp.com) you can visit it**
 
 ## Credits
 
-- Copy icon from [feather](feathericons.com)
-- Main font is [Be Vietnam Pro](fonts.google.com/specimen/Be+Vietnam+Pro)
+- Copy icon from [feather](https://feathericons.com)
+- Main font is [Be Vietnam Pro](https://fonts.google.com/specimen/Be+Vietnam+Pro)
 
 ## Adittional
 
-Dont forget to check also the [Telegram to Notion Bot's repository](github.com/FranP-code/Telegram-to-Notion-Bot).
+Dont forget to check also the [Telegram to Notion Bot's repository](https://github.com/FranP-code/Telegram-to-Notion-Bot).
