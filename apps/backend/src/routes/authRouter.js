@@ -1,25 +1,9 @@
-const Express = require('express')
-const app = Express()
-const port = (process.env.PORT || 3030)
+const Express = require('express');
+const router = Express.Router()
 
 const axios = require('axios')
-require('dotenv').config()
 
-const favicon = require('serve-favicon');
-app.use(favicon(__dirname + '/public/favicon.ico'));
-
-const hbs = require('hbs')
-
-hbs.registerPartials(__dirname + '/views/partials')
-app.set('view engine', 'hbs')
-
-app.use(Express.static('public'));
-
-app.get('/', (req, res) => {
-    res.render('index')
-})
-
-app.get('/auth', async (req, res) => {
+router.get('/', async (req, res) => {
 
     async function requestAccessToken() {
         try {
@@ -60,7 +44,6 @@ app.get('/auth', async (req, res) => {
             return response
         }
         catch (error) {
-            console.log("error")
             console.log(error)
 
             return {status: 400}
@@ -69,19 +52,9 @@ app.get('/auth', async (req, res) => {
 
     const response = await requestAccessToken()
 
-    res.render('auth', {
-        name: "fran",
-        success: response.status === 200 ? true : false,
-        data: response.data
-    })
+    res.status(response.status).json(
+        response
+    )
 })
 
-app.get('/privacy-policy', (req, res) => {
-    res.render('privacy-policy')
-})
-
-app.get('/terms-of-use', (req, res)  => {
-    res.render('terms-of-use')
-})
-
-app.listen(port, () => console.log('port', port))
+module.exports = router
