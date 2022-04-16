@@ -1,7 +1,7 @@
 # Telegram to Notion Bot
 
 <p align="center">
-  <img src="https://i.ibb.co/zQ5Y8GT/icon-transparent.png" width="200" height="200"/>
+  <img src="https://i.ibb.co/bQQSbbH/icon-transparent.png" width="200" height="200"/>
 </p>
 
 <p align="center">
