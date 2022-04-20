@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
     async function requestAccessToken() {
         try {
             const reqData = {
-                code: req.query.code,
+                code: req.headers.code,
                 grant_type: "authorization_code",
                 redirect_uri: "https://telegram-to-notion.herokuapp.com/auth"
             }
@@ -45,7 +45,6 @@ router.get('/', async (req, res) => {
         }
         catch (error) {
             console.log(error)
-
             return {status: 400}
         }
     }

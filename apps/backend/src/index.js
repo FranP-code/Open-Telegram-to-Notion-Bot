@@ -3,6 +3,10 @@ const app = Express()
 const port = (process.env.PORT || 3030)
 require('dotenv').config()
 
+//Enable CORS
+const cors = require('cors');
+app.use(cors())
+
 //Configure Handlebars
 const hbs = require('hbs')
 hbs.registerPartials(__dirname + '/../views/partials')
