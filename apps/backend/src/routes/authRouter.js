@@ -3,7 +3,7 @@ const router = Express.Router()
 
 const axios = require('axios')
 
-router.get('/', async (req, res) => {
+router.post('/', async (req, res) => {
 
     async function requestAccessToken() {
         try {
@@ -45,7 +45,7 @@ router.get('/', async (req, res) => {
         }
         catch (error) {
             console.log(error)
-            return {status: 400}
+            return {status: 400, body: {data: error.response.data.error}}
         }
     }
 
