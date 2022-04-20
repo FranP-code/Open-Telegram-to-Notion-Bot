@@ -51,7 +51,6 @@ function Index() {
                     
                     color: #999;
 
-                    margin-left: 1vw;
                     margin-top: 5px;
                     
                     align-self: center;
@@ -68,7 +67,7 @@ function Index() {
 
             border-radius: 5px;
 
-            margin-top: 6vh;
+            margin-top: 3vh;
             margin-left: 1vw;
             padding: 3vh 6vw;
 
@@ -99,7 +98,7 @@ function Index() {
                     listData.map((obj, index) => (
                         <li key={index}>
                             {obj.link ? <a href={obj.link} target="_blank" children={<h2>› {obj.text}</h2>} rel="noreferrer"/> : <h2>› {obj.text}</h2>}
-                            {obj.secondaryText ? <span>{obj.secondaryText}</span> : null}
+                            {obj.secondaryText ? <span>&nbsp;{obj.secondaryText}</span> : null}
                         </li>
                     ))
                 }
