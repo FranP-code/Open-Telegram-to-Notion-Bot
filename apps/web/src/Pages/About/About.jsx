@@ -5,7 +5,7 @@ import { Link } from 'wouter'
 const About = () => {
 
     const Style = styled.main`
-        padding: 0px 3vw;
+        padding: 2vh 3vw;
 
         section {
             margin-bottom: 5vh;
