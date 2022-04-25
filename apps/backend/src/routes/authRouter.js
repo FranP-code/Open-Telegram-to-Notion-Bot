@@ -5,10 +5,12 @@ const axios = require('axios')
 
 router.post('/', async (req, res) => {
 
+    console.log(req.body)
+
     async function requestAccessToken() {
         try {
             const reqData = {
-                code: req.headers.code,
+                code: req.body.code,
                 grant_type: "authorization_code",
                 redirect_uri: "https://telegram-to-notion.herokuapp.com/auth"
             }

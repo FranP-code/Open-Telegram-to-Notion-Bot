@@ -23,6 +23,9 @@ app.use(function (req, res, next) {
     next();
 });
 
+//Enable body json
+app.use(Express.json())
+
 //Configure Handlebars
 const hbs = require('hbs')
 hbs.registerPartials(__dirname + '/../views/partials')
