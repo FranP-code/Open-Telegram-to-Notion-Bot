@@ -1,5 +1,6 @@
 import icon from './icon.png'
 import styled from 'styled-components'
+import { Link } from 'wouter'
 
 function Header() {
 
@@ -8,11 +9,15 @@ function Header() {
         height: 15vh;
 
         display: flex;
+        justify-content: space-between;
         align-items: center;
 
         padding: 0px 2vw;
 
         border-bottom: 1px solid #eee;
+
+        user-select: none;
+        cursor: pointer;
 
         .logotype {
             display: flex;
@@ -40,16 +45,41 @@ function Header() {
             }
         }
 
+        .links {
+            display: flex;
+            flex-direction: column;
+
+            a {
+                color: #000;
+                font-weight: bold;
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+
     `
-    
+
     return (
         <HeaderStyles>
-            <div className='logotype'>
-                <img src={icon} alt="Page icon"></img>
-                <h1>Telegram to Notion Bot</h1>
-            </div>
-            <div>
-
+            <Link href='/'>
+                <div className='logotype'>
+                    <img src={icon} alt="Page icon"></img>
+                    <h1>Telegram to Notion Bot</h1>
+                </div>
+            </Link>
+            <div className="links">
+                <Link href="/about">
+                    About
+                </Link>
+                <Link href="/privacy-policy">
+                    Privacy policy
+                </Link>
+                <Link href="/terms-of-use">
+                    Terms of use
+                </Link>
             </div>
         </HeaderStyles>
     )
