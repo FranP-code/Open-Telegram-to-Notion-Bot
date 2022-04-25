@@ -1,9 +1,9 @@
-{{> global }}
+import React from 'react'
 
-<body>
-    {{> betaBanner }}
-    <div class="main">
-        <h1>Privacy Policy</h1>
+const PrivacyPolicy = () => {
+    return (
+        <div style={{padding: "2vh 3vw"}}>
+ <h1>Privacy Policy</h1>
         <p>Last updated: April 11, 2022</p>
         <p>This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.</p>
         <p>We use Your Personal data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy. This Privacy Policy has been created with the help of the <a href="https://www.freeprivacypolicy.com/blog/sample-privacy-policy-template/" target="_blank">Privacy Policy Template</a>.</p>
@@ -134,5 +134,8 @@
         <ul>
         <li>By email: franpessano1@gmail.com</li>
         </ul>
-    </div>
-</body>
+        </div>
+    )
+}
+
+export default PrivacyPolicy

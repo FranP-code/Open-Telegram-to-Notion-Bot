@@ -1,0 +1,27 @@
+.auth {
+  padding: 1vh 3vw;
+}
+.auth h2, .auth h3 {
+  margin-top: 5vh;
+}
+.auth .success {
+  display: flex;
+  align-items: center;
+  background-color: #ffebcd;
+  padding: 5vh 2vw;
+  margin-top: 5vh;
+  border-radius: 20px;
+}
+.auth .success img {
+  width: 75px;
+  height: 75px;
+  margin-right: 3vw;
+}
+.auth .success .code-selection {
+  -webkit-user-select: all;
+     -moz-user-select: all;
+          user-select: all;
+  overflow-wrap: anywhere;
+  color: rgb(73, 70, 50);
+  font-size: 1.2em;
+}/*# sourceMappingURL=auth-style.css.map */

@@ -1,8 +1,8 @@
-{{> global cssFile="index"}}
-<body>
-    {{> betaBanner }}
-    <div class="main">
-        <h1>Terms and conditions</h1>
+const TermsOfUse = () => {
+
+    return (
+        <div style={{padding: "2vh 3vw"}}>
+<h1>Terms and conditions</h1>
         <p>These terms and conditions (“Agreement”) set forth the general terms and conditions of your use of the “Telegram to Notion Bot” mobile application (“Mobile Application” or “Service”) and any of its related products and services (collectively, “Services”). This Agreement is legally binding between you (“User”, “you” or “your”) and this Mobile Application developer (“Operator”, “we”, “us” or “our”). If you are entering into this agreement on behalf of a business or other legal entity, you represent that you have the authority to bind such entity to this agreement, in which case the terms “User”, “you” or “your” shall refer to such entity. If you do not have such authority, or if you do not agree with the terms of this agreement, you must not accept this agreement and may not access and use the Mobile Application and Services. By accessing and using the Mobile Application and Services, you acknowledge that you have read, understood, and agree to be bound by the terms of this Agreement. You acknowledge that this Agreement is a contract between you and the Operator, even though it is electronic and is not physically signed by you, and it governs your use of the Mobile Application and Services. This terms and conditions policy was created with the help of the <a target="_blank" href="https://www.websitepolicies.com/terms-and-conditions-generator" rel="noopener">terms and conditions generator</a>.</p>
         <h2>Accounts and membership</h2>
         <p>You must be at least 16 years of age to use the Mobile Application and Services. By using the Mobile Application and Services and by agreeing to this Agreement you warrant and represent that you are at least 16 years of age.</p>
@@ -20,5 +20,8 @@
         <p>If you have any questions, concerns, or complaints regarding this Agreement, we encourage you to contact us using the details below:</p>
         <p>&#102;r&#97;&#110;&#112;e&#115;s&#97;n&#111;&#49;&#64;g&#109;&#97;&#105;&#108;.&#99;&#111;m</p>
         <p>This document was last updated on April 11, 2022</p>
-    </div>
-</body>
+        </div>
+    )
+}
+
+export default TermsOfUse

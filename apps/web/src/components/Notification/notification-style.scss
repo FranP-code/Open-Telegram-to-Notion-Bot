@@ -1,0 +1,25 @@
+.notification {
+
+    width: 15vw;
+    min-width: 300px;
+
+    background-color: #4797ff2a;
+    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.541);
+
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, 0);
+
+    padding: 2vh 3vw;
+
+    border-radius: 10px;
+    
+    p {
+        overflow-wrap: anywhere;   
+        text-align: center;
+        font-weight: bold;
+    }
+    
+
+}
