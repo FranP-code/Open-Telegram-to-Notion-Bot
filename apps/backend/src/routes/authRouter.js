@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
     const response = await requestAccessToken()
 
     res.status(response.status).json(
-        response
+        response.data
     )
 })
 
