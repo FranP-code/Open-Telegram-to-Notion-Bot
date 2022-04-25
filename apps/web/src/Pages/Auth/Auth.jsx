@@ -27,9 +27,9 @@ function Auth() {
         let requestUrl
 
         if (process.env.REACT_APP_ENV_MODE === "production") {
-            requestUrl = "http://localhost:5050/api/v1/auth"
-        } else {
             requestUrl = "https://telegram-to-notion-backend.herokuapp.com/api/v1/auth"
+        } else {
+            requestUrl = "http://localhost:5050/api/v1/auth"
         }
 
         axios({
