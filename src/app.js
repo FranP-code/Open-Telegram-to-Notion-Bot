@@ -71,7 +71,7 @@ bot.command('auth', ctx => {
                 [
                     {
                         text: "Authorize",
-                        url: `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${process.env.NOTION_INTEGRATION_ID}&redirect_uri=https://telegram-to-notion.herokuapp.com/auth&response_type=code`
+                        url: `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${process.env.NOTION_INTEGRATION_ID}&redirect_uri=https://telegram-to-notion-bot.netlify.app/auth&response_type=code`
                     }
                 ]
             ]
