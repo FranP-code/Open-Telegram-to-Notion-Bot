@@ -12,7 +12,7 @@ router.post('/', async (req, res) => {
             const reqData = {
                 code: req.body.code,
                 grant_type: "authorization_code",
-                redirect_uri: "https://telegram-to-notion.herokuapp.com/auth"
+                redirect_uri: "https://telegram-to-notion-bot.netlify.app/auth"
             }
 
             const auth = {
