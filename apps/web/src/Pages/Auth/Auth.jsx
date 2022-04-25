@@ -39,8 +39,7 @@ function Auth() {
             data: {code: temporalCode}
         })
         .then(res => {
-            console.log(res)
-            setPermanentCode(res ? res.data : null)
+            setPermanentCode(res ? res.data.access_token : null)
         })
         .catch(err => {
             console.log(err.response)
