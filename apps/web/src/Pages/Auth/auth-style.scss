@@ -1,0 +1,37 @@
+.auth {
+    padding: 1vh 3vw;
+
+    h2, h3 {
+        margin-top: 5vh;
+    }
+
+    .success {
+
+        display: flex;
+        align-items: center;
+
+        background-color: #ffebcd;
+
+        padding: 5vh 2vw;
+
+        margin-top: 5vh;
+
+        border-radius: 20px;
+
+        img {
+            width: 75px;
+            height: 75px;
+
+            margin-right: 3vw;
+        }
+
+        .code-selection {
+            user-select: all;
+            overflow-wrap: anywhere;
+            
+            color: rgb(73, 70, 50);
+            font-size: 1.2em;
+
+        }
+    }
+}
