@@ -17,11 +17,11 @@ function Header() {
         border-bottom: 1px solid #eee;
 
         user-select: none;
-        cursor: pointer;
-
+        
         .logotype {
             display: flex;
             align-items: center;
+            cursor: pointer;
             
             img {
                 width: 80px;
