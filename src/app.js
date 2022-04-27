@@ -176,7 +176,11 @@ bot.on("callback_query:data", async ctx => {
 
 // Delete message function
 async function deleteMessage(ctx, messageId) {
-    await ctx.api.deleteMessage(ctx.chat.id, messageId)
+    try {
+        await ctx.api.deleteMessage(ctx.chat.id, messageId)
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 bot.on(':sticker', ctx => {
