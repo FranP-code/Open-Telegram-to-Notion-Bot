@@ -80,7 +80,14 @@ bot.command('auth', ctx => {
 })
 
 bot.command('help', ctx => {
-    ctx.reply("The repository of this bot on <strong>Github</strong>: https://github.com/FranP-code/Telegram-to-Notion-Bot", {parse_mode: "HTML"})
+    ctx.reply(
+        `
+• The repository of this bot on <strong>Github</strong>:
+  https://github.com/FranP-code/Telegram-to-Notion-Bot
+
+• The <strong>website</strong> of this project:
+  https://telegram-to-notion-bot.netlify.app
+        `, {parse_mode: "HTML"})
 })
 
 // On the message sending, exec the main function of the bot
