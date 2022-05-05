@@ -20,9 +20,9 @@
 
 With this bot you can authorize that it receive the text that you send and **store it on one selected database of Notion**.
 
-## Where I can find it?
+## Where I can use it?
 
-Using the oficial **[link of Telegram to the bot](https://t.me/TelegrmToNotionBot)**.
+On Telegram, using the oficial **[link of Telegram to the bot](https://t.me/TelegrmToNotionBot)**.
 
 ## Credits
 
