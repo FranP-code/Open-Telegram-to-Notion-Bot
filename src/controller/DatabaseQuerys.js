@@ -3,6 +3,7 @@ const NotionQuerys = require("./NotionQuerys")
 
 const addUser = require("../models/querys/addUser")
 const searchUser = require("../models/querys/searchUser")
+const searchAllUsers = require('../models/querys/searchAllUsers')
 
 function DatabaseQuerys() {
 
@@ -32,10 +33,28 @@ function DatabaseQuerys() {
         return {success: true, data: decrypt(response.data.notionAuthKey)}
     }
 
+    async function getUser(userId) {
+        try {
+            return await searchUser(userId)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    async function getAllUsers() {
+        try {
+            return await searchAllUsers()
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     return {
         uploadApiKey,
         checkUserRegistered,
-        getNotionAuthKey
+        getNotionAuthKey,
+        getUser,
+        getAllUsers
     }
 }
 
