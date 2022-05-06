@@ -56,6 +56,12 @@ bot.use(async (ctx, next) => {
     }
 })
 
+//Set a middleware for send a 'typing' state every time the bot is called
+bot.use((ctx, next) => {
+    ctx.replyWithChatAction("typing")
+    next()
+})
+
 //Welcome message
 bot.command('start', ctx => {
     ctx.reply(`Welcome to the *Telegram to Notion Bot*\n\nWith this bot you can send any text message and add it to one database on Notion\n\nType /auth for authorize the bot`, {parse_mode: "MarkdownV2"})
@@ -93,8 +99,6 @@ bot.command('help', ctx => {
 // On the message sending, exec the main function of the bot
 bot.on(':text', async ctx => {
 
-    ctx.reply("*Wait a moment*", {parse_mode: "MarkdownV2"})
-
     const response = await AppController().getNotionDatabases(ctx.from.id)
 
     if (response.status === "error") {
@@ -113,10 +117,6 @@ bot.on(':text', async ctx => {
     }
 
     ctx.session.textForAdd = ctx.message.text
-
-    setTimeout(() => {
-        deleteMessage(ctx, ctx.update.message.message_id + 1)
-    }, 500)
 
     ctx.reply("Select the database to *save this text*", {
         reply_markup: {
@@ -146,12 +146,11 @@ bot.on(':text', async ctx => {
 //Handle the text sended for the user
 bot.on("callback_query:data", async ctx => {
 
-    ctx.reply("*Wait a moment*", {parse_mode: "MarkdownV2"})
-
     let id = ctx.update.callback_query.data
 
     // Check if the data includes the prefix indicated
     if (!id.includes("database_id")) {
+        reportError(ctx)
         return
     }
 
@@ -168,17 +167,12 @@ bot.on("callback_query:data", async ctx => {
 
     if (response.status === "error") {
         deleteMessage(ctx, ctx.update.callback_query.message.message_id)
-        ctx.reply("Has been an error. Try again later")
+        reportError(ctx)
         return
     }
 
-    setTimeout(() => {
-        deleteMessage(ctx, ctx.update.callback_query.message.message_id)
-        deleteMessage(ctx, ctx.update.callback_query.message.message_id + 1)
-    }, 500)
-
-    ctx.reply("✅ *Done*", {parse_mode: "MarkdownV2"})
     ctx.reply(`<strong>${text}</strong> added to <strong>${response.databaseTitle}</strong> database 👍`, {parse_mode: "HTML"})
+    deleteMessage(ctx, ctx.update.callback_query.message.message_id)
 })
 
 // Delete message function
@@ -188,6 +182,11 @@ async function deleteMessage(ctx, messageId) {
     } catch (error) {
         console.log(error)
     }
+}
+
+// Error message function
+function reportError(ctx) {
+    ctx.reply("Has been an error. Try again later")
 }
 
 bot.on(':sticker', ctx => {
