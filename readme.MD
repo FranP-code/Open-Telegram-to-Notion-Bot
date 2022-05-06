@@ -30,4 +30,6 @@ On Telegram, using the oficial **[link of Telegram to the bot](https://t.me/Tele
 
 ## Additional
 
-Dont forget to check also the [Telegram to Notion Bot website's](https://github.com/FranP-code/Telegram-to-Notion-Website) repository.
+Dont forget to check also:
+- [Telegram to Notion Bot website's](https://github.com/FranP-code/Telegram-to-Notion-Website) repository
+- [Telegram to Notion Roadmap](https://franpcode.notion.site/franpcode/3ef68732c1f9426dbdaba21e20dc3509?v=660b09746d4d4ede877a477d3b628f02)
