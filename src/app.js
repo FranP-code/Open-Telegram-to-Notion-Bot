@@ -91,10 +91,9 @@ bot.use(async (ctx, next) => {
         }
 
         users.forEach((user, index) => {
-            setTimeout(() => {
-
+            setTimeout(async () => {
                 try {
-                    ctx.api.sendMessage(user.userId, ctx.message.text, {parse_mode: "HTML"})
+                    await bot.api.sendMessage(user.userId, ctx.message.text, {parse_mode: "HTML"})
                     console.log(`Message sended to ${user.userId}`)
                 } catch (err) {
                     console.log(err)
