@@ -1,13 +1,15 @@
 const { Bot, session } = require('grammy');
+require('dotenv').config()
+
+//Controllers
 const DatabaseQuerys = require('./controller/DatabaseQuerys');
 const AppController = require('./controller/AppController')
-require('dotenv').config()
 
 const bot = new Bot(process.env.BOT_TOKEN)
 
 // Setting default session for user
 function initialSesionValues() {
-    return {waitingForAuthCode: false};
+    return {waitingForAuthCode: false, waitingForAnnouncementMessage: false};
 }
 
 bot.use(session({ initial: initialSesionValues }));
@@ -163,6 +165,11 @@ bot.command("announcement", async (ctx) => {
     
     await ctx.reply("Tell your announcement, king.\n\nIt gonna have an <strong>HTML format</strong>.", {parse_mode: "HTML"})
     ctx.reply("Type CANCEL for cancel the announcement")
+})
+
+// Roadmap command
+bot.command("roadmap", (ctx) => {
+    ctx.reply(`Sure, here is the <strong>Telegram to Notion Bot's Roadmap</strong> 👇\n\nhttps://franpcode.notion.site/franpcode/3ef68732c1f9426dbdaba21e20dc3509?v=660b09746d4d4ede877a477d3b628f02`, {parse_mode: "HTML"})
 })
 
 /**
