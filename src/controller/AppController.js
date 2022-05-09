@@ -23,7 +23,7 @@ function AppController() {
         const response = await NotionQuerys(notionAuthKey.data).addTextToDatabase(databaseId, message)
         const databaseData = await NotionQuerys(notionAuthKey.data).getDatabaseData(databaseId)
 
-        response.databaseTitle = databaseData.title[0].text.content
+        response.databaseTitle = databaseData.title.length <= 0 ?  "Untitled" : databaseData.title[0].text.content
         return response
     }
 

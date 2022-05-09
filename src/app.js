@@ -191,9 +191,13 @@ bot.on(':text', async ctx => {
 
     ctx.session.textForAdd = ctx.message.text
 
+    console.log(response.results[0]);
+
     ctx.reply("Select the database to *save this text*", {
         reply_markup: {
             inline_keyboard: response.results.map((obj) => {
+
+                const title = obj.title.length <= 0 ?  "Untitled" : obj.title[0].text.content
 
                 if (obj.properties.telegramIgnore) {
                     return []
@@ -201,12 +205,12 @@ bot.on(':text', async ctx => {
 
                 if (obj.icon) {
                     return [{
-                        text: `${obj.icon.emoji ? obj.icon.emoji + " " : ""}${obj.title[0].text.content}`,
+                        text: `${obj.icon.emoji ? obj.icon.emoji + " " : ""}${title}`,
                         callback_data: "database_id" + obj.id
                     }]
                 } else {
                     return [{
-                        text: obj.title[0].text.content,
+                        text: title,
                         callback_data: "database_id" + obj.id
                     }]
                 }
