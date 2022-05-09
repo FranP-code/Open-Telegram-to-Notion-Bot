@@ -2,8 +2,15 @@ const { Bot, session } = require('grammy');
 require('dotenv').config()
 
 //Controllers
-const DatabaseQuerys = require('./controller/DatabaseQuerys');
-const AppController = require('./controller/AppController')
+const DatabaseQuerys = require('../controller/DatabaseQuerys');
+const AppController = require('../controller/AppController');
+
+//Commands
+const start = require('./commands/start');
+const auth = require('./commands/auth');
+const help = require('./commands/help');
+const announcement = require('./commands/announcement');
+const roadmap = require('./commands/roadmap');
 
 const bot = new Bot(process.env.BOT_TOKEN)
 
@@ -119,58 +126,20 @@ bot.use((ctx, next) => {
     next()
 })
 
-//Welcome message
-bot.command('start', ctx => {
-    ctx.reply(`Welcome to the *Telegram to Notion Bot*\n\nWith this bot you can send any text message and add it to one database on Notion\n\nType /auth for authorize the bot`, {parse_mode: "MarkdownV2"})
-})
+// Start command
+bot.command('start', start)
 
 // Auth message sending
-bot.command('auth', ctx => {
-    ctx.session.waitingForAuthCode = true
-    
-    ctx.reply(`Tap here 👇 for authorize the bot on Notion and paste the resulting code`, {
-        reply_markup: {
-            inline_keyboard: [
-                [
-                    {
-                        text: "Authorize",
-                        url: `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${process.env.NOTION_INTEGRATION_ID}&redirect_uri=https://telegram-to-notion-bot.netlify.app/auth&response_type=code`
-                    }
-                ]
-            ]
-        }
-    })
-})
+bot.command('auth', auth)
 
 // Help command
-bot.command('help', ctx => {
-    ctx.reply(
-        `
-• The repository of this bot on <strong>Github</strong>:
-  https://github.com/FranP-code/Telegram-to-Notion-Bot
-
-• The <strong>website</strong> of this project:
-  https://telegram-to-notion-bot.netlify.app
-        `, {parse_mode: "HTML"})
-})
+bot.command('help', help)
 
 // Announcement command
-bot.command("announcement", async (ctx) => {
-    if (ctx.from.id !== parseInt(process.env.MY_USER_ID)) {
-        ctx.reply("Sorry, this command is only for admins")
-        return
-    }
-
-    ctx.session.waitingForAnnouncementMessage = true
-    
-    await ctx.reply("Tell your announcement, king.\n\nIt gonna have an <strong>HTML format</strong>.", {parse_mode: "HTML"})
-    ctx.reply("Type CANCEL for cancel the announcement")
-})
+bot.command("announcement", announcement)
 
 // Roadmap command
-bot.command("roadmap", (ctx) => {
-    ctx.reply(`Sure, here is the <strong>Telegram to Notion Bot's Roadmap</strong> 👇\n\nhttps://franpcode.notion.site/franpcode/3ef68732c1f9426dbdaba21e20dc3509?v=660b09746d4d4ede877a477d3b628f02`, {parse_mode: "HTML"})
-})
+bot.command("roadmap", roadmap)
 
 /**
  ** Little note: all the commands are before the on(:text) of the bot
