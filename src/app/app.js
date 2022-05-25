@@ -167,30 +167,32 @@ bot.on(':text', async ctx => {
 
     ctx.session.textForAdd = ctx.message.text
 
-    console.log(response.results[0]);
-
     ctx.reply("Select the database to *save this text*", {
         reply_markup: {
-            inline_keyboard: response.results.map((obj) => {
+            inline_keyboard: [
+                ...response.results.map((obj) => {
+                        const title = obj.title.length <= 0 ?  "Untitled" : obj.title[0].text.content
 
-                const title = obj.title.length <= 0 ?  "Untitled" : obj.title[0].text.content
+                        if (obj.properties.telegramIgnore) {
+                            return []
+                        }
 
-                if (obj.properties.telegramIgnore) {
-                    return []
-                }
-
-                if (obj.icon) {
-                    return [{
-                        text: `${obj.icon.emoji ? obj.icon.emoji + " " : ""}${title}`,
-                        callback_data: "database_id" + obj.id
-                    }]
-                } else {
-                    return [{
-                        text: title,
-                        callback_data: "database_id" + obj.id
-                    }]
-                }
-            })
+                        if (obj.icon) {
+                            return [{
+                                text: `${obj.icon.emoji ? obj.icon.emoji + " " : ""}${title}`,
+                                callback_data: "database_id" + obj.id
+                            }]
+                        } else {
+                            return [{
+                                text: title,
+                                callback_data: "database_id" + obj.id
+                            }]
+                        }
+                    }),
+                    [
+                        {text: "🚫", callback_data: "cancel_operation"}
+                    ]
+                ]
         },
         parse_mode: "MarkdownV2"
     })
@@ -200,6 +202,17 @@ bot.on(':text', async ctx => {
 bot.on("callback_query:data", async ctx => {
 
     let id = ctx.update.callback_query.data
+    const text = ctx.session.textForAdd
+
+    // Clean the state of the text
+    ctx.session.textForAdd = false
+
+    //In case that the cancel button is pressed
+    if (id === "cancel_operation") {
+        deleteMessage(ctx, ctx.update.callback_query.message.message_id)
+        ctx.reply(`Operation canceled 👍`, {parse_mode: "HTML"})
+        return
+    }
 
     // Check if the data includes the prefix indicated
     if (!id.includes("database_id")) {
@@ -209,12 +222,6 @@ bot.on("callback_query:data", async ctx => {
 
     // Delete the prefix
     id = id.split('database_id')[1]
-    
-    // Almacenate the text to add
-    const text = ctx.session.textForAdd
-
-    // Clean the state of the text
-    ctx.session.textForAdd = false
 
     const response = await AppController().addMessageToNotionDatabase(ctx.from.id, id, text)
 
