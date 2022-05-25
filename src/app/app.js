@@ -13,6 +13,7 @@ const auth = require('./commands/auth');
 const help = require('./commands/help');
 const announcement = require('./commands/announcement');
 const roadmap = require('./commands/roadmap');
+const feedback = require('./commands/feedback');
 
 //Events
 const onText = require('./events/onText');
@@ -62,6 +63,9 @@ bot.command("announcement", announcement)
 
 // Roadmap command
 bot.command("roadmap", roadmap)
+
+// Feedback command
+bot.command("feedback", feedback)
 
 /*
  * Little note: all the commands are before the events of the bot
