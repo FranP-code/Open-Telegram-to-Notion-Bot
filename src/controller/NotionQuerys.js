@@ -76,7 +76,7 @@ function NotionQuerys(authCode) {
         try {
             const response = await notion.databases.retrieve({database_id: databaseId})
             return response
-        } catch (error) {
+        } catch (err) {
             console.log(err)
             return {status: "error"}
         }

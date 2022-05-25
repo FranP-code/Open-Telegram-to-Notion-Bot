@@ -16,7 +16,7 @@ const bot = new Bot(process.env.BOT_TOKEN)
 
 // Setting default session for user
 function initialSesionValues() {
-    return {waitingForAuthCode: false, waitingForAnnouncementMessage: false};
+    return {waitingForAuthCode: false, waitingForAnnouncementMessage: false, textsForAdd: []};
 }
 
 bot.use(session({ initial: initialSesionValues }));
@@ -114,7 +114,6 @@ bot.use(async (ctx, next) => {
             }, 30000 * index)
         });
 
-
     } else {
         next()
     }
@@ -165,9 +164,23 @@ bot.on(':text', async ctx => {
         return
     }
 
-    ctx.session.textForAdd = ctx.message.text
+    //Add text to array of texts
+    const text = ctx.message.text.trim()
+    ctx.session.textsForAdd.push(text)
 
-    ctx.reply("Select the database to *save this text*", {
+    //If pass some time delete the text on the array
+    function cleanArray() {
+        if (ctx.session.textsForAdd.includes(text)) {
+            const index = ctx.session.textsForAdd.indexOf(text)
+            ctx.session.textsForAdd.splice(index, 1)
+        }
+    }
+
+    setTimeout(cleanArray, 5 * 60 * 1000)
+
+    const botReply = text.length > 20 ? "\n\n" + text : text
+
+    ctx.reply(`Select the <strong>database</strong> to save <strong>${botReply}</strong>`, {
         reply_markup: {
             inline_keyboard: [
                 ...response.results.map((obj) => {
@@ -180,12 +193,12 @@ bot.on(':text', async ctx => {
                         if (obj.icon) {
                             return [{
                                 text: `${obj.icon.emoji ? obj.icon.emoji + " " : ""}${title}`,
-                                callback_data: "database_id" + obj.id
+                                callback_data: "database_id" + obj.id + "text_index" + JSON.stringify(ctx.session.textsForAdd.length - 1)
                             }]
                         } else {
                             return [{
                                 text: title,
-                                callback_data: "database_id" + obj.id
+                                callback_data: "database_id" + obj.id + "text_index" + JSON.stringify(ctx.session.textsForAdd.length - 1)
                             }]
                         }
                     }),
@@ -194,36 +207,34 @@ bot.on(':text', async ctx => {
                     ]
                 ]
         },
-        parse_mode: "MarkdownV2"
+        parse_mode: "HTML"
     })
 })
 
 //Handle the text sended for the user
 bot.on("callback_query:data", async ctx => {
 
-    let id = ctx.update.callback_query.data
-    const text = ctx.session.textForAdd
-
-    // Clean the state of the text
-    ctx.session.textForAdd = false
-
     //In case that the cancel button is pressed
-    if (id === "cancel_operation") {
+    if (ctx.update.callback_query.data === "cancel_operation") {
         deleteMessage(ctx, ctx.update.callback_query.message.message_id)
         ctx.reply(`Operation canceled 👍`, {parse_mode: "HTML"})
         return
     }
 
-    // Check if the data includes the prefix indicated
-    if (!id.includes("database_id")) {
+    //Get database id
+    const databaseID = extractSubstring(ctx.update.callback_query.data, "database_id", "text_index")
+    
+    //Get what text want the user add
+    const textIndex = parseInt(extractSubstring(ctx.update.callback_query.data, "text_index", ""))
+    const text = ctx.session.textsForAdd[textIndex]
+
+    // Check if databaseID and text are defined
+    if (!databaseID || !text) {
         reportError(ctx)
         return
     }
 
-    // Delete the prefix
-    id = id.split('database_id')[1]
-
-    const response = await AppController().addMessageToNotionDatabase(ctx.from.id, id, text)
+    const response = await AppController().addMessageToNotionDatabase(ctx.from.id, databaseID, text)
 
     if (response.status === "error") {
         deleteMessage(ctx, ctx.update.callback_query.message.message_id)
@@ -231,9 +242,36 @@ bot.on("callback_query:data", async ctx => {
         return
     }
 
-    ctx.reply(`<strong>${text}</strong> added to <strong>${response.databaseTitle}</strong> database 👍`, {parse_mode: "HTML"})
+    ctx.reply(`<strong>${text.length > 20 ? text + "\n\n</strong>" : text + "</strong> "}added to <strong>${response.databaseTitle}</strong> database 👍`, {parse_mode: "HTML"})
     deleteMessage(ctx, ctx.update.callback_query.message.message_id)
+
+    // Change this text on array for null
+    ctx.session.textsForAdd[textIndex] = null
+
+    // If all texts on the array are null, clean the array
+    let allTextsAreNull = true
+
+    ctx.session.textsForAdd.forEach(text => {
+        if (text !== null) {
+            allTextsAreNull = false
+        }
+    })
+
+    if (allTextsAreNull) {
+        ctx.session.textsForAdd = []
+    }
 })
+
+//Extract substring function
+function extractSubstring(str, a, b) {
+
+    const position = str.indexOf(a) + a.length;
+
+    if (!b) {
+        return str.substring(position, str.length)
+    }
+    return str.substring(position, str.indexOf(b, position));
+}
 
 // Delete message function
 async function deleteMessage(ctx, messageId) {
