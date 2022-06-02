@@ -1,16 +1,17 @@
+const AppController = require('../../controller/AppController')
+
 async function onText(ctx) {
 
-    const AppController = require('../../controller/AppController')
+    //Get databases
+    const databases = await AppController().getNotionDatabases(ctx.from.id)
 
-    const response = await AppController().getNotionDatabases(ctx.from.id)
-
-    if (response.status === "error") {
+    if (databases.status === "error") {
         
-        switch (response.message) {
+        switch (databases.message) {
             case "no auth code":
                 ctx.reply('No auth code provided\n*Use the /auth command for provide it*', {parse_mode: "MarkdownV2"})
                 break;
-        
+
             default:
                 ctx.reply('Unknow error\n*Try again later*', {parse_mode: "MarkdownV2"})
                 break;
@@ -31,39 +32,15 @@ async function onText(ctx) {
         }
     }
 
-    setTimeout(cleanArray, 5 * 60 * 1000)
+    //Delete the item in the textsForAdd in...
+    setTimeout(cleanArray, 5 * 60 * 1000) //5 Minutes
 
     const botReply = text.length > 20 ? "\n\n" + text : text
 
-    ctx.reply(`Select the <strong>database</strong> to save <strong>${botReply}</strong>`, {
-        reply_markup: {
-            inline_keyboard: [
-                ...response.results.map((obj) => {
-                        const title = obj.title.length <= 0 ?  "Untitled" : obj.title[0].text.content
+    //Generate Keyboard from the databases
+    const keyboard = await AppController().getKeyboardOfDatabases(databases.results, null, "text", ctx.session.textsForAdd)
 
-                        if (obj.properties.telegramIgnore) {
-                            return []
-                        }
-
-                        if (obj.icon) {
-                            return [{
-                                text: `${obj.icon.emoji ? obj.icon.emoji + " " : ""}${title}`,
-                                callback_data: "database_id" + obj.id + "text_index" + JSON.stringify(ctx.session.textsForAdd.length - 1)
-                            }]
-                        } else {
-                            return [{
-                                text: title,
-                                callback_data: "database_id" + obj.id + "text_index" + JSON.stringify(ctx.session.textsForAdd.length - 1)
-                            }]
-                        }
-                    }),
-                    [
-                        {text: "🚫", callback_data: "cancel_operation"}
-                    ]
-                ]
-        },
-        parse_mode: "HTML"
-    })
+    ctx.reply(`Select the <strong>database</strong> to save <strong>${botReply}</strong>`, {...keyboard, parse_mode: "HTML"})
 }
 
 module.exports = onText

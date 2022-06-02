@@ -82,11 +82,59 @@ function NotionQuerys(authCode) {
         }
     }
 
+    async function createPageWithBlock(database_id, config) {
+        try {
+            let response
+
+            switch (config.blockType) {
+                case "image":
+                    response = await notion.pages.create({
+                        parent: {
+                            database_id
+                        },
+                        properties: {
+                            title: [
+                                {
+                                    text: {
+                                        content: config.title
+                                    }
+                                }
+                            ]
+                        },
+                        children: [
+                            {
+                                object: "block",
+                                type: "image",
+                                image: {
+                                    type: "external",
+                                    external: {
+                                        url: config.imageURL
+                                    }
+                                }
+                            }
+                        ]
+                    })
+
+                    response.databaseData = await getDatabaseData(database_id)
+                    break;
+            
+                default:
+                    return {status: "error"}
+                    break;
+            }
+            return response
+        } catch (err) {
+            console.log(err)
+            return {status: "error"}
+        }
+    }
+
     return {
         checkAuthCode,
         returnAllDatabases,
         addTextToDatabase,
-        getDatabaseData
+        getDatabaseData,
+        createPageWithBlock
     }
 }
 

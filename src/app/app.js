@@ -6,6 +6,7 @@ const developmentMsg = require('./middlewares/developmentMsg');
 const authCodeHandler = require('./middlewares/authCodeHandler');
 const announcementHandler = require('./middlewares/announcementHandler');
 const chatAction = require('./middlewares/chatAction');
+const cleanSessions = require('./middlewares/cleanSessions');
 
 //Commands
 const start = require('./commands/start');
@@ -28,7 +29,12 @@ const bot = new Bot(process.env.BOT_TOKEN)
 
 // Setting default session for user
 function initialSesionValues() {
-    return {waitingForAuthCode: false, waitingForAnnouncementMessage: false, textsForAdd: []};
+    return {
+        waitingForAuthCode: false,
+        waitingForAnnouncementMessage: false,
+        textsForAdd: [],
+        imagesForAdd: []
+    };
 }
 
 bot.use(session({ initial: initialSesionValues }));
@@ -44,6 +50,9 @@ bot.use(announcementHandler)
 
 //Set a middleware for send a 'typing' state every time the bot is called
 bot.use(chatAction)
+
+//Set a middleware for check if for each session array, one is full of null objects. In that case, clean it
+bot.use(cleanSessions)
 
 
 //* ---------------- COMMANDS ----------------

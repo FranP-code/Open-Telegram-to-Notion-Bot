@@ -4,6 +4,7 @@ const NotionQuerys = require("./NotionQuerys")
 const addUser = require("../models/querys/addUser")
 const searchUser = require("../models/querys/searchUser")
 const searchAllUsers = require('../models/querys/searchAllUsers')
+const uploadImage = require("../models/querys/uploadImage")
 
 function DatabaseQuerys() {
 
@@ -49,12 +50,29 @@ function DatabaseQuerys() {
         }
     }
 
+    async function uploadAndGetImageURL(url) {
+        try {
+            const data = await uploadImage(url)
+
+            return {
+                status: "success",
+                data: {
+                    url: data.url
+                }
+            }
+        } catch (err) {
+            console.log(err)
+            return {status: "error"}
+        }
+    }
+
     return {
         uploadApiKey,
         checkUserRegistered,
         getNotionAuthKey,
         getUser,
-        getAllUsers
+        getAllUsers,
+        uploadAndGetImageURL
     }
 }
 
