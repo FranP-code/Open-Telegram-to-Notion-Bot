@@ -43,7 +43,7 @@ function NotionQuerys(authCode) {
         }
     }
 
-    async function addTextToDatabase(databaseId, text) {
+    async function addBlockToDatabase(databaseId, title, propierties) {
 
         try {
             const response = await notion.pages.create({
@@ -54,10 +54,11 @@ function NotionQuerys(authCode) {
                     title: [
                         {
                             text: {
-                                content: text
+                                content: title
                             }
                         }
-                    ]
+                    ],
+                    ...propierties
                 }
             })
 
@@ -83,6 +84,7 @@ function NotionQuerys(authCode) {
     }
 
     async function createPageWithBlock(database_id, config) {
+
         try {
             let response
 
@@ -99,7 +101,8 @@ function NotionQuerys(authCode) {
                                         content: config.title
                                     }
                                 }
-                            ]
+                            ],
+                            ...config.propierties
                         },
                         children: [
                             {
@@ -132,7 +135,7 @@ function NotionQuerys(authCode) {
     return {
         checkAuthCode,
         returnAllDatabases,
-        addTextToDatabase,
+        addBlockToDatabase,
         getDatabaseData,
         createPageWithBlock
     }

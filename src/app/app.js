@@ -32,8 +32,8 @@ function initialSesionValues() {
     return {
         waitingForAuthCode: false,
         waitingForAnnouncementMessage: false,
-        textsForAdd: [],
-        imagesForAdd: []
+        dataForAdd: [],
+        waitingForPropiertyValue: false
     };
 }
 

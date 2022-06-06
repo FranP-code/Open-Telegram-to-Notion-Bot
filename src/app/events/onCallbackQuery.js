@@ -1,105 +1,210 @@
 const AppController = require("../../controller/AppController")
-const DatabaseQuerys = require("../../controller/DatabaseQuerys")
+
+const extractSubstring = require("../../scripts/extractSubstring")
+const deleteMessage = require("../../scripts/deleteMessage")
 
 async function onCallbackQuery(ctx) {
 
-    //In case that the cancel button is pressed
-    if (ctx.update.callback_query.data.includes("co_")) {
+    const userID = ctx.from.id
 
-        //Get dataType
-        const dataType = extractSubstring(ctx.update.callback_query.data, "dt_", "i_")
-        
-        switch (dataType) {
-            case "text":
-                //Get text position
-                const textIndex = parseInt(extractSubstring(ctx.update.callback_query.data, "i_", ""))
-                //Make it null
-                ctx.session.textsForAdd[textIndex] = null
-                break;
+    const prefix = ctx.update.callback_query.data.substring(0, 3)
+    /**
+     * * "db_" = database selection
+     * * "pr_" = propierty selection
+     * * "vl_" = value selection
+    */
+
+    switch (prefix) {
+        case "db_": {
+            await AppController().t_responses(ctx).respondWithOfPropierties(userID)
             
-            case "image":
-                //Get image position
-                const position = parseInt(extractSubstring(ctx.update.callback_query.data, "i_", ""))
-                //Make it null
-                ctx.session.imagesForAdd[position] = null
+            //Delete the previous message
+            deleteMessage(ctx, ctx.update.callback_query.message.message_id)
+            
+            break;
+        }
         
-            default:
-                break;
+        case "pr_": {
+
+            //Check if cancel operation button is pressed
+            if (extractSubstring(ctx.update.callback_query.data, "pr_", "in_") === "co_") {
+                ctx.reply("Operation canceled", {parse_mode: "HTML"})
+                //Delete the previous message
+                deleteMessage(ctx, ctx.update.callback_query.message.message_id)
+                return
             }
-        deleteMessage(ctx, ctx.update.callback_query.message.message_id)
-        ctx.reply(`Operation canceled 👍`, {parse_mode: "HTML"})
-        return
-    }
 
-    //Get database id
-    const databaseID = extractSubstring(ctx.update.callback_query.data, "db_", "dt_")
+            //Check if send button is pressed
+            if (extractSubstring(ctx.update.callback_query.data, "pr_", "in_") === "sd_") {
 
-    //Get dataType
-    const dataType = extractSubstring(ctx.update.callback_query.data, "dt_", "i_")
+                //Get data
+                const index = extractSubstring(ctx.update.callback_query.data, "in_", false)
+                const data = ctx.session.dataForAdd[index]
+                
+                let response
+                
+                switch (data.type) {
+                    case "text": {
+                        //Get what text want the user add
+                        const text = data.data.title
+                        
+                        response = await AppController().addMessageToNotionDatabase(userID, data.databaseID, data)
+                        
+                        if (response.status !== "error") {
+                            ctx.reply(`<strong>${text.length > 20 ? text + "\n\n</strong>" : text + "</strong> "}added to <strong>${response.databaseTitle}</strong> database 👍`, {parse_mode: "HTML"})
+                        }
 
-    let response
+                        break;
+                    }
 
-    switch (dataType) {
-        case "text":
-            //Get what text want the user add
-            const textIndex = parseInt(extractSubstring(ctx.update.callback_query.data, "i_", ""))
-            const text = ctx.session.textsForAdd[textIndex]
+                    case "image":
+                        //Get what image want the user add
+                        const image = data.data
+                        image.title = image.title ? image.title : image.file_path
 
-            response = await AppController().addMessageToNotionDatabase(ctx.from.id, databaseID, text)
-        
-            ctx.reply(`<strong>${text.length > 20 ? text + "\n\n</strong>" : text + "</strong> "}added to <strong>${response.databaseTitle}</strong> database 👍`, {parse_mode: "HTML"})
-        
-            // Change this text on array for null
-            ctx.session.textsForAdd[textIndex] = null
+                        response = await AppController().addImageToDatabase(userID, data.databaseID, `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${image.file_path}`, image.title, data.propiertiesValues)
+
+                        if (response.status !== "error") {
+                            ctx.reply(`<strong>${image.title.length > 20 ? image.title + "\n\n</strong>" : image.title + "</strong> "}added to <strong>${response.databaseTitle}</strong> database 👍`, {parse_mode: "HTML"})
+                        }
+                            
+                        break;
+                
+                    default:
+                        reportError(ctx)
+                        break;
+                }
+
+                // Change this data on array for null
+                ctx.session.dataForAdd[index] = null
+
+                //Report in error case
+                if (response.status === "error") {
+                    deleteMessage(ctx, ctx.update.callback_query.message.message_id)
+                    reportError(ctx)
+                    return
+                }
+
+                //Delete DB selector
+                deleteMessage(ctx, ctx.update.callback_query.message.message_id)
+
+                return
+            }
+
+            await AppController().t_responses(ctx).respondWithPropiertyValues()
+
+            //Delete the previous message
+            deleteMessage(ctx, ctx.update.callback_query.message.message_id)
+
             break;
+        }
 
-        case "image":
-            //Get what image want the user add
-            const index = parseInt(extractSubstring(ctx.update.callback_query.data, "i_", ""))
-            const image = ctx.session.imagesForAdd[index]
-            const imageTitle = image.title ? image.title : image.file_path
+        case "vl_": {
+            //Get data index
+            const index = parseInt(extractSubstring(ctx.update.callback_query.data, "pi_", ""))
+ 
+            //If done or cancel operation button pressed
+            if (extractSubstring(ctx.update.callback_query.data, "vl_", "pi_") === "dn_") {
 
-            response = await AppController().addImageToDatabase(ctx.from.id, databaseID, `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${image.file_path}`, imageTitle)
+                //Set false in the case that the app was waiting for a value
+                ctx.session.waitingForPropiertyValue = false
 
-            ctx.reply(`<strong>${imageTitle.length > 20 ? imageTitle + "\n\n</strong>" : imageTitle + "</strong> "}added to <strong>${response.databaseTitle}</strong> database 👍`, {parse_mode: "HTML"})
+                //Delete the previous message
+                await deleteMessage(ctx, ctx.update.callback_query.message.message_id)
 
-            // Change this image on array for null
-            ctx.session.imagesForAdd[index] = null
+                AppController().t_responses(ctx).respondWithOfPropierties(userID, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
+                return
+            }
+
+            //Get propierty id
+            const propiertyID = extractSubstring(ctx.update.callback_query.data, "pr_", "pi_")
+
+            //Get propierty data
+            const propierty = Object.values(ctx.session.dataForAdd[index].propierties).find(prop => {
+                return prop.id === propiertyID
+            })
+
+            //Get optionID
+            const optionID = extractSubstring(ctx.update.callback_query.data, "vl_", "pr_")
+
+            //If not exists the propierties values propierty, create it
+            if (!ctx.session.dataForAdd[index].propiertiesValues) {
+                ctx.session.dataForAdd[index].propiertiesValues = {}
+            }
+
+            const propiertyValue = ctx.session.dataForAdd[index].propiertiesValues[propiertyID]
+
+            switch (propierty.type) {
+                case "multi_select": {
+                    //Get data
+                    const data = propierty.multi_select.options.find(option => {
+                        return option.id === optionID
+                    })
+
+                    if (propiertyValue) {
+                        // If the array don't include the propierty id, add it
+                        if (!Object.keys(ctx.session.dataForAdd[index].propiertiesValues[propiertyID]).includes(data)) {
+                            ctx.session.dataForAdd[index].propiertiesValues[propiertyID] = [...propiertyValue, data]
+                        }
+                    } else {
+                        ctx.session.dataForAdd[index].propiertiesValues[propiertyID] = [data]
+                    }
+
+                    ctx.reply(`<strong>${data.name}</strong> value added`, {parse_mode: "HTML"})
+                    
+                    break;
+                }
+ 
+                case "checkbox": {
+                    // Get the boolean of the optionID
+                    const p_data = JSON.parse(optionID)
+                    
+                    //Add it to the values
+                    ctx.session.dataForAdd[index].propiertiesValues[propiertyID] = p_data
+                    
+                    //Reply
+                    await ctx.reply(`<strong>${propierty.name}</strong> is <strong>${p_data ? "checked" : "unchecked"}</strong>`, {parse_mode: "HTML"})
+
+                    //Delete the checked selector
+                    await deleteMessage(ctx, ctx.update.callback_query.message.message_id)
+
+                    //Reply with propierties list
+                    AppController().t_responses(ctx).respondWithOfPropierties(userID, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
+                 
+                    break; 
+                }
+
+                case "select": { 
+                    //Get data
+                    const data = propierty.select.options.find(option => {
+                        return option.id === optionID
+                    })
+  
+                    ctx.session.dataForAdd[index].propiertiesValues[propiertyID] = data
+
+                    //Reply
+                    await ctx.reply(`<strong>${data.name}</strong> value added`, {parse_mode: "HTML"})
+
+                    //Delete the checked selector
+                    await deleteMessage(ctx, ctx.update.callback_query.message.message_id)
+
+                    //Reply with propierties list
+                    AppController().t_responses(ctx).respondWithOfPropierties(userID, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
+                    break;
+            
+                }
+
+                default:
+                    reportError(ctx)
+                    break;
+            }
+
             break;
-    
+        }
+
         default:
             reportError(ctx)
             break;
-    }
-
-    //Report in error case
-    if (response.status === "error") {
-        deleteMessage(ctx, ctx.update.callback_query.message.message_id)
-        reportError(ctx)
-        return
-    }
-
-    //Delete DB selector
-    deleteMessage(ctx, ctx.update.callback_query.message.message_id)
-}
-
-//Extract substring function
-function extractSubstring(str, start, end) {
-
-    const position = str.indexOf(start) + start.length;
-
-    if (!end) {
-        return str.substring(position, str.length)
-    }
-    return str.substring(position, str.indexOf(end, position));
-}
-
-// Delete message function
-async function deleteMessage(ctx, messageId) {
-    try {
-        await ctx.api.deleteMessage(ctx.chat.id, messageId)
-    } catch (error) {
-        console.log(error)
     }
 }
 

@@ -1,21 +1,16 @@
 function cleanSessions(ctx, next) {
+    // If all elements on the array are null, clean the array
+    let allTextsAreNull = true
 
-    const sessions = [ctx.session.textsForAdd, ctx.session.imagesForAdd]
-    
-    sessions.forEach(session => {
-        // If all elements on the array are null, clean the array
-        let allTextsAreNull = true
-
-        session.forEach(element => {
-            if (element !== null) {
-                allTextsAreNull = false
-            }
-        })
-
-        if (allTextsAreNull) {
-            session = []
+    ctx.session.dataForAdd.forEach(element => {
+        if (element !== null) {
+            allTextsAreNull = false
         }
-    });
+    })
+
+    if (allTextsAreNull) {
+        ctx.session.dataForAdd = []
+    }
 
     next()
 }

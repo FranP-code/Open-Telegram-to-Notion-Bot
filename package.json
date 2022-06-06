@@ -20,6 +20,7 @@
     "axios": "^0.27.2",
     "dotenv": "^16.0.0",
     "grammy": "^1.7.2",
+    "moment": "^2.29.3",
     "mongoose": "^6.2.10"
   },
   "devDependencies": {

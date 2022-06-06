@@ -25,20 +25,21 @@ async function onPhoto(ctx) {
     }
 
     //Add image to array of texts
-    ctx.session.imagesForAdd.push(data)
+    const obj = {type: "image", data}
+    ctx.session.dataForAdd.push(obj)
 
     //If pass some time delete the text on the array
     function cleanArray() {
-        if (ctx.session.imagesForAdd.includes(data)) {
-            const index = ctx.session.imagesForAdd.indexOf(data)
-            ctx.session.imagesForAdd.splice(index, 1)
+        if (ctx.session.dataForAdd.includes(obj)) {
+            const index = ctx.session.dataForAdd.indexOf(obj)
+            ctx.session.dataForAdd.splice(index, 1)
         }
     }
 
-    //Delete the item in the imagesForAdd in...
-    setTimeout(cleanArray, 5 * 60 * 1000) //5 Minutes
+    //Delete the item in the dataForAdd in...
+    setTimeout(cleanArray, 15 * 60 * 1000) //15 Minutes
 
-    const keyboard = await AppController().getKeyboardOfDatabases(databases.results, "❌ Don't upload image", "image", ctx.session.imagesForAdd)
+    const keyboard = await AppController().getKeyboardOfDatabases(databases.results, "❌ Don't upload image", "image", ctx.session.dataForAdd)
 
     ctx.reply(`Select the <strong>database</strong> to save this image\n\nIf you atached an caption to this image, <strong>it's gonna be the title of the new page</strong> in the Database\n\n<strong>Remember that this image keeps public</strong>\nDon't upload sensitive data!`, {...keyboard, parse_mode: "HTML"})
 }
