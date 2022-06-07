@@ -121,6 +121,12 @@ function AppController() {
          * 
          * Thank you Telegram and your's 64 bit limit https://github.com/yagop/node-telegram-bot-api/issues/706
          */
+
+        //Check quantity of databases for the reply markup
+        if (databases.length >= 100) {
+            return {status: "error", message: "Values quantity can't be more than 100"}
+        }
+
         return {
             reply_markup: {
                 inline_keyboard: [
@@ -210,6 +216,11 @@ function AppController() {
             }
         })
 
+        //Check quantity of data for the reply markup
+        if (propierties.length >= 100) {
+            return {status: "error", message: "Propierties quantity can't be more than 100"}
+        }
+
         return {
             reply_markup: {
                 inline_keyboard: [
@@ -243,9 +254,14 @@ function AppController() {
          * * pr_ = propierty_id
          * * dn_ = done
         */
-        
+
         switch (propierty.type) {
             case "multi_select":
+
+                const response = checkQuantity(propierty.multi_select.options)
+                if (response) {
+                    return response
+                }
                 await ctx.reply(`Select the options for add to <strong>${propierty.name}</strong>`, {parse_mode: "HTML", reply_markup: {
                     inline_keyboard: [
                         ...propierty.multi_select.options.map(option => {
@@ -307,7 +323,13 @@ function AppController() {
                     }
                 })
                 break;
-            case "select":
+            case "select": {
+                
+                const response = checkQuantity(propierty.select.options)
+                if (response) {
+                    return response
+                }
+
                 await ctx.reply(`Select the value for <strong>${propierty.name}</strong> propierty`, {parse_mode: "HTML",
                     reply_markup: {
                         inline_keyboard: [
@@ -325,6 +347,7 @@ function AppController() {
                     }
                 })
                 break; 
+            }
             case "email":
                 ctx.session.waitingForPropiertyValue = {...propierty, propiertyIndex}
                 await ctx.reply(`Type the email for <strong>${propierty.name}</strong>`, {parse_mode: "HTML",
@@ -406,6 +429,13 @@ function AppController() {
             default:
                 return {response: "error"}
                 break;
+        }
+
+        function checkQuantity(propierties) {
+            //Check quantity of data for the reply markup
+            if (propierties.length >= 100) {
+                return {status: "error", message: "Values quantity can't be more than 100"}
+            } else return null
         }
     }
 
