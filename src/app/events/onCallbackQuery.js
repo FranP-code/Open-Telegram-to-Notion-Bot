@@ -42,7 +42,12 @@ async function onCallbackQuery(ctx) {
                 const data = ctx.session.dataForAdd[index]
                 
                 let response
-                
+
+                if (data === undefined) {
+                    reportError(ctx)
+                    return
+                }
+
                 switch (data.type) {
                     case "text": {
                         //Get what text want the user add
