@@ -16,7 +16,7 @@ async function onCallbackQuery(ctx) {
 
     switch (prefix) {
         case "db_": {
-            await AppController().t_responses(ctx).respondWithOfPropierties(userID)
+            await AppController().t_response(ctx).propierties(userID)
             
             //Delete the previous message
             deleteMessage(ctx, ctx.update.callback_query.message.message_id)
@@ -53,7 +53,7 @@ async function onCallbackQuery(ctx) {
                         //Get what text want the user add
                         const text = data.data.title
                         
-                        response = await AppController().addMessageToNotionDatabase(userID, data.databaseID, data)
+                        response = await AppController().notion().addMessageToDatabase(userID, data.databaseID, data)
                         
                         if (response.status !== "error") {
                             ctx.reply(`<strong>${text.length > 20 ? text + "\n\n</strong>" : text + "</strong> "}added to <strong>${response.databaseTitle}</strong> database 👍`, {parse_mode: "HTML"})
@@ -67,7 +67,7 @@ async function onCallbackQuery(ctx) {
                         const image = data.data
                         image.title = image.title ? image.title : image.file_path
 
-                        response = await AppController().addImageToDatabase(userID, data.databaseID, `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${image.file_path}`, image.title, data.propiertiesValues)
+                        response = await AppController().notion().addImageToDatabase(userID, data.databaseID, `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${image.file_path}`, image.title, data.propiertiesValues)
 
                         if (response.status !== "error") {
                             ctx.reply(`<strong>${image.title.length > 20 ? image.title + "\n\n</strong>" : image.title + "</strong> "}added to <strong>${response.databaseTitle}</strong> database 👍`, {parse_mode: "HTML"})
@@ -96,7 +96,7 @@ async function onCallbackQuery(ctx) {
                 return
             }
 
-            await AppController().t_responses(ctx).respondWithPropiertyValues()
+            await AppController().t_response(ctx).values()
 
             //Delete the previous message
             deleteMessage(ctx, ctx.update.callback_query.message.message_id)
@@ -117,7 +117,7 @@ async function onCallbackQuery(ctx) {
                 //Delete the previous message
                 await deleteMessage(ctx, ctx.update.callback_query.message.message_id)
 
-                AppController().t_responses(ctx).respondWithOfPropierties(userID, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
+                AppController().t_response(ctx).propierties(userID, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
                 return
             }
 
@@ -174,7 +174,7 @@ async function onCallbackQuery(ctx) {
                     await deleteMessage(ctx, ctx.update.callback_query.message.message_id)
 
                     //Reply with propierties list
-                    AppController().t_responses(ctx).respondWithOfPropierties(userID, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
+                    AppController().t_response(ctx).propierties(userID, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
                  
                     break; 
                 }
@@ -194,7 +194,7 @@ async function onCallbackQuery(ctx) {
                     await deleteMessage(ctx, ctx.update.callback_query.message.message_id)
 
                     //Reply with propierties list
-                    AppController().t_responses(ctx).respondWithOfPropierties(userID, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
+                    AppController().t_response(ctx).propierties(userID, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
                     break;
             
                 }

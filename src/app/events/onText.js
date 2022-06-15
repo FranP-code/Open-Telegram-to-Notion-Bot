@@ -8,10 +8,12 @@ async function onText(ctx) {
 
     if (ctx.session.waitingForPropiertyValue) {
         
-        const index = ctx.session.waitingForPropiertyValue.propiertyIndex
+        const index = ctx.session.waitingForPropiertyValue.index
         const propiertyID = ctx.session.waitingForPropiertyValue.id
 
         let userInput = ctx.message.text.trim()
+
+        console.log(ctx.session.waitingForPropiertyValue)
         
         //If not exists the propierties values propierty, create it
         if (!ctx.session.dataForAdd[index].propiertiesValues) {
@@ -109,7 +111,7 @@ async function onText(ctx) {
         await deleteMessage(ctx, ctx.update.message.message_id - 1)
 
         //Return the list of propierties to user
-        AppController().t_responses(ctx).respondWithOfPropierties(ctx.from.id, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
+        AppController().t_response(ctx).propierties(ctx.from.id, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
         
         //App not longer waits for propierty value...
         ctx.session.waitingForPropiertyValue = false
@@ -118,7 +120,7 @@ async function onText(ctx) {
     }
 
     //Get databases
-    const databases = await AppController().getNotionDatabases(ctx.from.id)
+    const databases = await AppController().notion().getDatabases(ctx.from.id)
 
     if (databases.status === "error") {
         
@@ -154,7 +156,7 @@ async function onText(ctx) {
     const botReply = text.length > 20 ? "\n\n" + text : text
 
     //Generate Keyboard from the databases
-    const keyboard = await AppController().getKeyboardOfDatabases(databases.results, null, "text", ctx.session.dataForAdd)
+    const keyboard = await AppController().generateKeyboard().databases(databases.results, null, "text", ctx.session.dataForAdd)
 
     ctx.reply(`Select the <strong>database</strong> to save <strong>${botReply}</strong>`, {...keyboard, parse_mode: "HTML"})
 }

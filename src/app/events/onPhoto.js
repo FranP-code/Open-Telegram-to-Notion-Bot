@@ -3,7 +3,7 @@ const AppController = require('../../controller/AppController.js')
 async function onPhoto(ctx) {
     const data = await ctx.getFile()
 
-    const databases = await AppController().getNotionDatabases(ctx.from.id)
+    const databases = await AppController().notion().getDatabases(ctx.from.id)
 
     if (databases.status === "error") {
         switch (databases.message) {
@@ -39,7 +39,7 @@ async function onPhoto(ctx) {
     //Delete the item in the dataForAdd in...
     setTimeout(cleanArray, 15 * 60 * 1000) //15 Minutes
 
-    const keyboard = await AppController().getKeyboardOfDatabases(databases.results, "❌ Don't upload image", "image", ctx.session.dataForAdd)
+    const keyboard = await AppController().generateKeyboard().databases(databases.results, "❌ Don't upload image", "image", ctx.session.dataForAdd)
 
     ctx.reply(`Select the <strong>database</strong> to save this image\n\nIf you atached an caption to this image, <strong>it's gonna be the title of the new page</strong> in the Database\n\n<strong>Remember that this image keeps public</strong>\nDon't upload sensitive data!`, {...keyboard, parse_mode: "HTML"})
 }
