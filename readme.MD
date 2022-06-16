@@ -1,7 +1,7 @@
-# Telegram to Notion Bot
+# Open Telegram to Notion Bot
 
 <p align="center">
-  <img src="https://i.ibb.co/bQQSbbH/icon-transparent.png" width="200" height="200"/>
+  <img src="https://i.ibb.co/v1bS7pj/icon-rounded-box.png" width="200" height="200"/>
 </p>
 
 <p align="center">
@@ -22,7 +22,7 @@ With this bot you can authorize that it receive the text that you send and **sto
 
 ## Where I can use it?
 
-On Telegram, using the oficial **[link of Telegram to the bot](https://t.me/TelegrmToNotionBot)**.
+On Telegram, using the oficial **[link of Telegram to the bot](https://t.me/OpenTelegramToNotionBot)**.
 
 ## Credits
 
