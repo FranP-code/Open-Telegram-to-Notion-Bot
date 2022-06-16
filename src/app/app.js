@@ -7,6 +7,7 @@ const authCodeHandler = require('./middlewares/authCodeHandler');
 const announcementHandler = require('./middlewares/announcementHandler');
 const chatAction = require('./middlewares/chatAction');
 const cleanSessions = require('./middlewares/cleanSessions');
+const oldBotMessage = require('./middlewares/oldBotMessage');
 
 //Commands
 const start = require('./commands/start');
@@ -54,6 +55,8 @@ bot.use(chatAction)
 //Set a middleware for check if for each session array, one is full of null objects. In that case, clean it
 bot.use(cleanSessions)
 
+//Set old bot message middleware
+bot.use(oldBotMessage)
 
 //* ---------------- COMMANDS ----------------
 
