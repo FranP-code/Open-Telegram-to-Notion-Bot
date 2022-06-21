@@ -111,7 +111,7 @@ async function onText(ctx) {
         await deleteMessage(ctx, ctx.update.message.message_id - 1)
 
         //Return the list of propierties to user
-        AppController().t_response(ctx).propierties(ctx.from.id, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
+        AppController.t_response(ctx).propierties(ctx.from.id, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
         
         //App not longer waits for propierty value...
         ctx.session.waitingForPropiertyValue = false
@@ -120,7 +120,7 @@ async function onText(ctx) {
     }
 
     //Get databases
-    const databases = await AppController().notion().getDatabases(ctx.from.id)
+    const databases = await AppController.notion.getDatabases(ctx.from.id)
 
     if (databases.status === "error") {
         
@@ -156,7 +156,7 @@ async function onText(ctx) {
     const botReply = text.length > 20 ? "\n\n" + text : text
 
     //Generate Keyboard from the databases
-    const keyboard = await AppController().generateKeyboard().databases(databases.results, null, "text", ctx.session.dataForAdd)
+    const keyboard = await AppController.generateKeyboard.databases(databases.results, null, "text", ctx.session.dataForAdd)
 
     ctx.reply(`Select the <strong>database</strong> to save <strong>${botReply}</strong>`, {...keyboard, parse_mode: "HTML"})
 }

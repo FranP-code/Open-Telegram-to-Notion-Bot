@@ -3,9 +3,9 @@ const NotionQuerys = require("./NotionQuerys")
 
 const extractSubstring = require('../scripts/extractSubstring')
 
-function AppController() {
+const AppController = {
 
-    function t_response(ctx) {
+    t_response(ctx) {
         async function propierties(userID, callback_query) {
 
             //Get data index
@@ -44,7 +44,7 @@ function AppController() {
     
             if (!ctx.session.dataForAdd[index].propierties) {
     
-                propierties = await AppController().notion().getPropierties(userID, databaseID)
+                propierties = await AppController.notion.getPropierties(userID, databaseID)
 
                 //Save propierties in data session
                 ctx.session.dataForAdd[index].propierties = propierties
@@ -56,7 +56,7 @@ function AppController() {
             }
     
             //Reply with propierties of the database
-            const keyboard = await AppController().generateKeyboard().propierties(Object.values(propierties), index)
+            const keyboard = await AppController.generateKeyboard.propierties(Object.values(propierties), index)
             await ctx.reply("Select the <strong>propierties</strong> for define", {parse_mode: "HTML", ...keyboard})
         }
 
@@ -252,10 +252,10 @@ function AppController() {
             propierties,
             values
         }
-    }
+    },
 
-    function generateKeyboard() {
-        async function databases(databases, cancelOperationText, dataType, sessionStorage) {
+    generateKeyboard: {
+        databases(databases, cancelOperationText, dataType, sessionStorage) {
 
             /**
              * * db_ = database_prefix
@@ -296,9 +296,9 @@ function AppController() {
                     ]
                 }
             }
-        }
+        },
 
-        async function propierties(propierties, dataIndex) {
+        propierties(propierties, dataIndex) {
             /**
              * * pr_ = propierty prefix
              * * in_ = data index
@@ -340,16 +340,10 @@ function AppController() {
                 }
             }
         }
+    },
 
-        return {
-            databases,
-            propierties
-        }
-    }
-
-    function notion() {
-
-        async function getDatabases(userID) {
+    notion: {
+        async getDatabases(userID) {
             const userRegistered = await DatabaseQuerys().checkUserRegistered(userID)
     
             if (userRegistered.status === "error") {
@@ -361,9 +355,9 @@ function AppController() {
     
             const notionAuthKey = await DatabaseQuerys().getNotionAuthKey(userID)
             return await NotionQuerys(notionAuthKey.data).returnAllDatabases()
-        }
+        },
     
-        async function addMessageToDatabase(userID, databaseId, data) {
+        async addMessageToDatabase(userID, databaseId, data) {
             const notionAuthKey = await DatabaseQuerys().getNotionAuthKey(userID)
         
             console.log(data)
@@ -372,9 +366,9 @@ function AppController() {
     
             response.databaseTitle = databaseData.title.length <= 0 ?  "Untitled" : databaseData.title[0].text.content
             return response
-        }
+        },
     
-        async function addImageToDatabase(userID, databaseID, imageURL, title, propierties) {
+        async addImageToDatabase(userID, databaseID, imageURL, title, propierties) {
     
             try {
                 const uploadResponse = await DatabaseQuerys().uploadAndGetImageURL(imageURL)
@@ -399,9 +393,9 @@ function AppController() {
                 console.log(err)       
                 return {status: "error"}
             }
-        }
+        },
     
-        async function getPropierties(userID, databaseID) {
+        async getPropierties(userID, databaseID) {
             try {
                 const notionAuthKey = await DatabaseQuerys().getNotionAuthKey(userID)
                 
@@ -412,19 +406,6 @@ function AppController() {
                 return {status: "error"}
             }
         }
-
-        return {
-            getDatabases,
-            addMessageToDatabase,
-            addImageToDatabase,
-            getPropierties
-        }
-    }
-
-    return {
-        t_response,
-        generateKeyboard,
-        notion
     }
 }
 
