@@ -1,5 +1,7 @@
 function chatAction(ctx, next) {
-    ctx.replyWithChatAction("typing")
+    if (!ctx.update.callback_query) {
+        ctx.replyWithChatAction("typing")
+    }
     next()
 }
 
