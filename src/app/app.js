@@ -8,6 +8,7 @@ const announcementHandler = require('./middlewares/announcementHandler');
 const chatAction = require('./middlewares/chatAction');
 const cleanSessions = require('./middlewares/cleanSessions');
 const oldBotMessage = require('./middlewares/oldBotMessage');
+const tryCatch = require("./middlewares/tryCatch")
 
 //Commands
 const start = require('./commands/start');
@@ -26,7 +27,6 @@ const bot = new Bot(process.env.BOT_TOKEN)
 
 
 //* ---------------- MIDDLEWARES ----------------
-
 
 // Setting default session for user
 function initialSesionValues() {
@@ -58,8 +58,10 @@ bot.use(cleanSessions)
 //Set old bot message middleware
 bot.use(oldBotMessage)
 
-//* ---------------- COMMANDS ----------------
+//Set a middleware for wrap the entire bot in a try catch sentence
+bot.use(tryCatch)
 
+//* ---------------- COMMANDS ----------------
 
 // Start command
 bot.command('start', start)

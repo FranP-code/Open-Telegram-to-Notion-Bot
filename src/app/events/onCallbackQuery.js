@@ -2,6 +2,7 @@ const AppController = require("../../controller/AppController")
 
 const extractSubstring = require("../../scripts/extractSubstring")
 const deleteMessage = require("../../scripts/deleteMessage")
+const reportError = require("../../scripts/reportError")
 
 async function onCallbackQuery(ctx) {
 
@@ -211,11 +212,6 @@ async function onCallbackQuery(ctx) {
             reportError(ctx)
             break;
     }
-}
-
-// Error message function
-function reportError(ctx) {
-    ctx.reply("Has been an error. Try again later")
 }
 
 module.exports = onCallbackQuery
