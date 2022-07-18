@@ -23,7 +23,10 @@ const onText = require('./events/onText');
 const onCallbackQuery = require('./events/onCallbackQuery');
 const onPhoto = require('./events/onPhoto');
 
-const bot = new Bot(process.env.BOT_TOKEN)
+const bot = new Bot(
+    process.env.OLD_BOT === "true" ? process.env.BOT_TOKEN_OLD :
+    process.env.NODE_ENV === "production" ? process.env.BOT_TOKEN_PROD : process.env.BOT_TOKEN_DEV
+)
 
 
 //* ---------------- MIDDLEWARES ----------------
