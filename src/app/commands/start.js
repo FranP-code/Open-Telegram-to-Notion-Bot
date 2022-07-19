@@ -1,5 +1,5 @@
 function start(ctx) {
-    ctx.reply(`Welcome to the *Telegram to Notion Bot*\n\nWith this bot you can send any text message and add it to one database on Notion\n\nType /auth for authorize the bot`, {parse_mode: "MarkdownV2"})
+    ctx.reply(`Welcome to the <strong>Telegram to Notion Bot</strong>\n\nPlease, expect that sometimes the bot is down, it is very complex and it falls down easily. It will be online as soon as possible!! 🙌\n\nType /auth for authorize the bot`, {parse_mode: "HTML"})
 }
 
 module.exports = start
