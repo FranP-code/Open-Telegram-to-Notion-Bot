@@ -142,17 +142,6 @@ async function onText(ctx) {
     const obj = {type: "text", data: {title: text}}
     ctx.session.dataForAdd.push(obj)
 
-    //If pass some time delete the text on the array
-    function cleanArray() {
-        if (ctx.session.dataForAdd.includes(obj)) {
-            const index = ctx.session.dataForAdd.indexOf(obj)
-            ctx.session.dataForAdd.splice(index, 1)
-        }
-    }
-
-    //Delete the item in the dataForAdd in...
-    setTimeout(cleanArray, 15 * 60 * 1000) //15 Minutes
-
     const botReply = text.length > 20 ? "\n\n" + text : text
 
     //Generate Keyboard from the databases

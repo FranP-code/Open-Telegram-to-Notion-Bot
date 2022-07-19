@@ -1,15 +1,6 @@
 function cleanSessions(ctx, next) {
-    // If all elements on the array are null, clean the array
-    let allTextsAreNull = true
-
-    ctx.session.dataForAdd.forEach(element => {
-        if (element !== null) {
-            allTextsAreNull = false
-        }
-    })
-
-    if (allTextsAreNull) {
-        ctx.session.dataForAdd = []
+    if (ctx.session.dataForAdd.length >= 15) {
+        ctx.session.dataForAdd = ctx.session.dataForAdd.splice(1, ctx.session.dataForAdd.length - 1)
     }
 
     next()
