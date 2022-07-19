@@ -2,15 +2,19 @@ const DatabaseQuerys = require("./DatabaseQuerys")
 const NotionQuerys = require("./NotionQuerys")
 
 const extractSubstring = require('../scripts/extractSubstring')
+const reportError = require("../scripts/reportError")
 
 const AppController = {
 
     t_response(ctx) {
         async function propierties(userID, callback_query) {
-
-            //Get data index
             const index = parseInt(extractSubstring(callback_query ? callback_query : ctx.update.callback_query.data, "in_", false))
-
+            
+            if (!ctx.session.dataForAdd[index]) {
+                reportError(ctx)
+                return
+            }
+        
             //Config initialization
             let config
     
@@ -62,9 +66,13 @@ const AppController = {
             const propID = extractSubstring(ctx.update.callback_query.data, "pr_", "in_")
             //Get data index
             const index = parseInt(extractSubstring(ctx.update.callback_query.data, "in_", ""))
-
             //Get data
             const data = ctx.session.dataForAdd[index]
+
+            if (!data) {
+                reportError(ctx)
+                return
+            }
 
             //Save this callbackQuery
             ctx.session.dataForAdd[index].propiertiesQuery = ctx.update.callback_query.data

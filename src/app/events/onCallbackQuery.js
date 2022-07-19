@@ -42,6 +42,11 @@ async function onCallbackQuery(ctx) {
 
                 //Get data
                 const data = ctx.session.dataForAdd[index]
+
+                if (!data) {
+                    reportError(ctx)
+                    return
+                }
                 
                 let response
 
