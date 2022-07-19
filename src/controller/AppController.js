@@ -25,9 +25,6 @@ const AppController = {
             //In case that the cancel button is pressed
             if (config.includes("co_")) {
 
-                //Get index
-                const index = parseInt(extractSubstring(config, "in_", false))
-
                 //Make value null
                 ctx.session.dataForAdd[index] = null
     

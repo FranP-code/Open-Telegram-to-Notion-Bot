@@ -26,10 +26,12 @@ async function onCallbackQuery(ctx) {
         }
         
         case "pr_": {
+            const index = extractSubstring(ctx.update.callback_query.data, "in_", false)
 
             //Check if cancel operation button is pressed
             if (extractSubstring(ctx.update.callback_query.data, "pr_", "in_") === "co_") {
                 ctx.reply("Operation canceled", {parse_mode: "HTML"})
+                ctx.session.dataForAdd[index] = null
                 //Delete the previous message
                 deleteMessage(ctx, ctx.update.callback_query.message.message_id)
                 return
@@ -39,7 +41,6 @@ async function onCallbackQuery(ctx) {
             if (extractSubstring(ctx.update.callback_query.data, "pr_", "in_") === "sd_") {
 
                 //Get data
-                const index = extractSubstring(ctx.update.callback_query.data, "in_", false)
                 const data = ctx.session.dataForAdd[index]
                 
                 let response

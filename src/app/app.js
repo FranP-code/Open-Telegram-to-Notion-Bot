@@ -6,7 +6,7 @@ const developmentMsg = require('./middlewares/developmentMsg');
 const authCodeHandler = require('./middlewares/authCodeHandler');
 const announcementHandler = require('./middlewares/announcementHandler');
 const chatAction = require('./middlewares/chatAction');
-const cleanSessions = require('./middlewares/cleanSessions');
+const checkSessionsSize = require('./middlewares/checkSessionsSize');
 const oldBotMessage = require('./middlewares/oldBotMessage');
 const tryCatch = require("./middlewares/tryCatch")
 
@@ -27,7 +27,6 @@ const bot = new Bot(
     process.env.OLD_BOT === "true" ? process.env.BOT_TOKEN_OLD :
     process.env.NODE_ENV === "production" ? process.env.BOT_TOKEN_PROD : process.env.BOT_TOKEN_DEV
 )
-
 
 //* ---------------- MIDDLEWARES ----------------
 
@@ -55,11 +54,11 @@ bot.use(announcementHandler)
 //Set a middleware for send a 'typing' state every time the bot is called
 bot.use(chatAction)
 
-//Set a middleware for check if for each session array, one is full of null objects. In that case, clean it
-bot.use(cleanSessions)
-
 //Set old bot message middleware
 bot.use(oldBotMessage)
+
+//Set a middleware for check if for each session array, one is full of null objects. In that case, clean it
+bot.use(checkSessionsSize)
 
 //Set a middleware for wrap the entire bot in a try catch sentence
 bot.use(tryCatch)
