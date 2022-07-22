@@ -120,7 +120,7 @@ async function onText(ctx) {
     }
 
     //Get databases
-    const databases = await AppController.notion.getDatabases(ctx.from.id)
+    const databases = await AppController.notion.getDatabases(ctx?.from?.id)
 
     if (databases.status === "error") {
         

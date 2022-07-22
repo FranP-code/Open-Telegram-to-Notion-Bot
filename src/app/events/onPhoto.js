@@ -3,7 +3,7 @@ const AppController = require('../../controller/AppController.js')
 async function onPhoto(ctx) {
     const data = await ctx.getFile()
 
-    const databases = await AppController.notion.getDatabases(ctx.from.id)
+    const databases = await AppController.notion.getDatabases(ctx?.from?.id)
 
     if (databases.status === "error") {
         switch (databases.message) {
