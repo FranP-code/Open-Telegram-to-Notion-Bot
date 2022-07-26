@@ -1,3 +1,5 @@
+const reply = require("../../scripts/reply")
+
 function checkSessionsSize(ctx, next) {
     let allTextsAreNull = true
 
@@ -13,7 +15,7 @@ function checkSessionsSize(ctx, next) {
 
     const limit = process.env.NODE_ENV === 'production' ? 15 : 3
     if (ctx.session.dataForAdd.length >= limit && !ctx.update?.callback_query?.data) {
-        ctx.reply(`There's ${ctx.session.dataForAdd.filter(data => data !== null).length} messages waiting for be sended to Notion or be canceled. Please, define them and send again a message.`)
+        reply(ctx, `There's ${ctx.session.dataForAdd.filter(data => data !== null).length} messages waiting for be sended to Notion or be canceled. Please, define them and send again a message.`)
         return
     }
     next()

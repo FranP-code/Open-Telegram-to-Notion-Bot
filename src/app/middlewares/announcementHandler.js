@@ -1,4 +1,5 @@
 const DatabaseQuerys = require("../../controller/DatabaseQuerys")
+const reply = require("../../scripts/reply")
 
 async function announcementHandler(ctx, next) {
     if (ctx.session.waitingForAnnouncementMessage) {
@@ -7,14 +8,14 @@ async function announcementHandler(ctx, next) {
 
         //Check if user is not me
         if (ctx.from.id !== parseInt(process.env.MY_USER_ID)) {
-            ctx.reply("<strong>What the fuck are you doing here?</strong>", {parse_mode: "HTML"})
+            reply(ctx, "<strong>What the fuck are you doing here?</strong>", {parse_mode: "HTML"})
             ctx.api.sendMessage(process.env.MY_USER_ID, "Somebody is making announcements. STOP THE BOT.", {parse_mode: "HTML"})
             return
         }
 
         //Check if the announcement have been cancelled
         if (ctx.message.text.trim().toLowerCase() === "cancel") {
-            ctx.reply("Announcement cancelled")
+            reply(ctx, "Announcement cancelled")
             return
         }
 
@@ -43,7 +44,7 @@ async function announcementHandler(ctx, next) {
                 }
 
                 if (index === users.length - 1) {
-                    ctx.reply(`Announcement complete.`)
+                    reply(ctx, `Announcement complete.`)
                 }
             }, 30000 * index)
         });

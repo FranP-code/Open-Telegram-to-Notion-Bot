@@ -21,6 +21,7 @@ const feedback = require('./commands/feedback');
 const onText = require('./events/onText');
 const onCallbackQuery = require('./events/onCallbackQuery');
 const onPhoto = require('./events/onPhoto');
+const reply = require('../scripts/reply');
 
 const bot = new Bot(
     process.env.OLD_BOT === "true" ? process.env.BOT_TOKEN_OLD :
@@ -110,7 +111,7 @@ bot.on("callback_query:data", onCallbackQuery)
 bot.on(':photo', onPhoto)
 
 bot.on(':sticker', ctx => {
-    ctx.reply('❤️')
+    reply(ctx, '❤️')
 })
 
 // Enable graceful stop

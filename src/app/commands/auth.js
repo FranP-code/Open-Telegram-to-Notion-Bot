@@ -1,7 +1,9 @@
+const reply = require("../../scripts/reply")
+
 function auth(ctx) {
     ctx.session.waitingForAuthCode = true
     
-    ctx.reply(`Tap here 👇 for authorize the bot on Notion and paste the resulting code`, {
+    reply(ctx, `Tap here 👇 for authorize the bot on Notion and paste the resulting code`, {
         reply_markup: {
             inline_keyboard: [
                 [

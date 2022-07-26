@@ -3,6 +3,7 @@ const AppController = require("../../controller/AppController")
 const extractSubstring = require("../../scripts/extractSubstring")
 const deleteMessage = require("../../scripts/deleteMessage")
 const reportError = require("../../scripts/reportError")
+const reply = require("../../scripts/reply")
 
 async function onCallbackQuery(ctx) {
 
@@ -30,7 +31,7 @@ async function onCallbackQuery(ctx) {
 
             //Check if cancel operation button is pressed
             if (extractSubstring(ctx.update.callback_query.data, "pr_", "in_") === "co_") {
-                ctx.reply("Operation canceled", {parse_mode: "HTML"})
+                reply(ctx, "Operation canceled", {parse_mode: "HTML"})
                 ctx.session.dataForAdd[index] = null
                 //Delete the previous message
                 deleteMessage(ctx, ctx.update.callback_query.message.message_id)
@@ -55,6 +56,8 @@ async function onCallbackQuery(ctx) {
                     return
                 }
 
+                const message = {}
+
                 switch (data.type) {
                     case "text": {
                         //Get what text want the user add
@@ -63,7 +66,8 @@ async function onCallbackQuery(ctx) {
                         response = await AppController.notion.addMessageToDatabase(userID, data.databaseID, data)
                         
                         if (response.status !== "error") {
-                            ctx.reply(`<strong>${text.length > 20 ? text + "\n\n</strong>" : text + "</strong> "}added to <strong>${response.databaseTitle}</strong> database 👍`, {parse_mode: "HTML"})
+                            message.text = `<strong>${text.length > 20 ? text + "\n\n</strong>" : text + "</strong> "}added to <strong>${response.databaseTitle}</strong> database 👍`
+                            message.data = {parse_mode: "HTML"}
                         }
 
                         break;
@@ -77,7 +81,8 @@ async function onCallbackQuery(ctx) {
                         response = await AppController.notion.addImageToDatabase(userID, data.databaseID, `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${image.file_path}`, image.title, data.propiertiesValues)
 
                         if (response.status !== "error") {
-                            ctx.reply(`<strong>${image.title.length > 20 ? image.title + "\n\n</strong>" : image.title + "</strong> "}added to <strong>${response.databaseTitle}</strong> database 👍`, {parse_mode: "HTML"})
+                            message.text = `<strong>${image.title.length > 20 ? image.title + "\n\n</strong>" : image.title + "</strong> "}added to <strong>${response.databaseTitle}</strong> database 👍`
+                            message.data = {parse_mode: "HTML"}
                         }
                             
                         break;
@@ -86,6 +91,8 @@ async function onCallbackQuery(ctx) {
                         reportError(ctx)
                         break;
                 }
+
+                reply(ctx, message.text, message.data)
 
                 // Change this data on array for null
                 ctx.session.dataForAdd[index] = null
@@ -146,6 +153,8 @@ async function onCallbackQuery(ctx) {
 
             const propiertyValue = ctx.session.dataForAdd[index].propiertiesValues[propiertyID]
 
+            const message = {}
+
             switch (propierty.type) {
                 case "multi_select": {
                     //Get data
@@ -162,7 +171,8 @@ async function onCallbackQuery(ctx) {
                         ctx.session.dataForAdd[index].propiertiesValues[propiertyID] = [data]
                     }
 
-                    ctx.reply(`<strong>${data.name}</strong> value added`, {parse_mode: "HTML"})
+                    message.text = `<strong>${data.name}</strong> value added`
+                    message.data = {parse_mode: "HTML"}
                     
                     break;
                 }
@@ -175,7 +185,8 @@ async function onCallbackQuery(ctx) {
                     ctx.session.dataForAdd[index].propiertiesValues[propiertyID] = p_data
                     
                     //Reply
-                    await ctx.reply(`<strong>${propierty.name}</strong> is <strong>${p_data ? "checked" : "unchecked"}</strong>`, {parse_mode: "HTML"})
+                    message.text = `<strong>${propierty.name}</strong> is <strong>${p_data ? "checked" : "unchecked"}</strong>`
+                    message.data = {parse_mode: "HTML"}
 
                     //Delete the checked selector
                     await deleteMessage(ctx, ctx.update.callback_query.message.message_id)
@@ -195,7 +206,8 @@ async function onCallbackQuery(ctx) {
                     ctx.session.dataForAdd[index].propiertiesValues[propiertyID] = data
 
                     //Reply
-                    await ctx.reply(`<strong>${data.name}</strong> value added`, {parse_mode: "HTML"})
+                    message.text = `<strong>${data.name}</strong> value added`
+                    message.data = {parse_mode: "HTML"}
 
                     //Delete the checked selector
                     await deleteMessage(ctx, ctx.update.callback_query.message.message_id)
@@ -210,6 +222,8 @@ async function onCallbackQuery(ctx) {
                     reportError(ctx)
                     break;
             }
+
+            reply(ctx, message.text, message.data)
 
             break;
         }

@@ -2,6 +2,7 @@ const moment = require("moment")
 
 const AppController = require('../../controller/AppController')
 const deleteMessage = require("../../scripts/deleteMessage")
+const reply = require("../../scripts/reply")
 
 
 async function onText(ctx) {
@@ -33,40 +34,41 @@ async function onText(ctx) {
             //Credits: https://stackoverflow.com/a/5717133/18740899
         
         //Check if the value is valid
+        let message
+
         switch (propierty.type) {
-            
             case "files":
                 if (!urlReg.test(userInput)) {
-                    await ctx.reply("This don't look like a URL")
-                    return
+                    message = "This don't look like a URL"
                 }
                 break;
 
             case "number":
                 if (isNaN(parseInt(userInput))) {
-                    await ctx.reply("That's not a number")
-                    return
+                    message = "That's not a number"
                 }
                 break;
 
             case "url":
                 if (!urlReg.test(userInput)) {
-                    await ctx.reply("This don't look like a URL")
-                    return
+                    message = "This don't look like a URL"
                 }
                 break;
 
             case "date":
                 userInput = moment(userInput).format().toString()
-
                 if (!moment(userInput).isValid()) {
-                    await ctx.reply("This don't look like a date")
-                    return
+                    message = "This don't look like a date"
                 }
                 break;
                 
             default:
                 break;
+        }
+
+        if (message) {
+            await reply(ctx, message)
+            return
         }
 
         //Parse text
@@ -107,9 +109,12 @@ async function onText(ctx) {
         ctx.session.dataForAdd[index].propiertiesValues[propiertyID] = userInput
         
         //Confirm to user the saved prop
-        await ctx.reply(`Data added to ${propierty.name}`)
-        await deleteMessage(ctx, ctx.update.message.message_id - 1)
-
+        try {
+            await reply(ctx, `Data added to ${propierty.name}`)
+            await deleteMessage(ctx, ctx.update.message.message_id - 1)
+        } catch (err) {
+            console.log(err)
+        }
         //Return the list of propierties to user
         AppController.t_response(ctx).propierties(ctx.from.id, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
         
@@ -126,11 +131,11 @@ async function onText(ctx) {
         
         switch (databases.message) {
             case "no auth code":
-                ctx.reply('No auth code provided\n*Use the /auth command for provide it*', {parse_mode: "MarkdownV2"})
+                reply(ctx, 'No auth code provided\n*Use the /auth command for provide it*', {parse_mode: "MarkdownV2"})
                 break;
 
             default:
-                ctx.reply('Unknow error\n*Try again later*', {parse_mode: "MarkdownV2"})
+                reply(ctx, 'Unknow error\n*Try again later*', {parse_mode: "MarkdownV2"})
                 break;
         }
 
@@ -147,7 +152,11 @@ async function onText(ctx) {
     //Generate Keyboard from the databases
     const keyboard = await AppController.generateKeyboard.databases(databases.results, null, "text", ctx.session.dataForAdd)
 
-    ctx.reply(`Select the <strong>database</strong> to save <strong>${botReply}</strong>`, {...keyboard, parse_mode: "HTML"})
+    try {
+        await reply(ctx, `Select the <strong>database</strong> to save <strong>${botReply}</strong>`, {...keyboard, parse_mode: "HTML"})
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 module.exports = onText

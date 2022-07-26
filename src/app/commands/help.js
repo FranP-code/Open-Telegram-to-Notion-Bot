@@ -1,5 +1,7 @@
+const reply = require("../../scripts/reply")
+
 function help(ctx) {
-    ctx.reply(
+    reply(ctx
         `
 • The repository of this bot on <strong>Github</strong>:
   https://github.com/FranP-code/Telegram-to-Notion-Bot

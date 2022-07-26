@@ -3,6 +3,7 @@ const NotionQuerys = require("./NotionQuerys")
 
 const extractSubstring = require('../scripts/extractSubstring')
 const reportError = require("../scripts/reportError")
+const reply = require("../scripts/reply")
 
 const AppController = {
 
@@ -33,7 +34,7 @@ const AppController = {
                 ctx.session.dataForAdd[index] = null
     
                 //Reply
-                ctx.reply(`Operation canceled 👍`, {parse_mode: "HTML"})
+                reply(ctx, `Operation canceled 👍`, {parse_mode: "HTML"})
                 return
             }
     
@@ -58,7 +59,7 @@ const AppController = {
     
             //Reply with propierties of the database
             const keyboard = await AppController.generateKeyboard.propierties(Object.values(propierties), index)
-            await ctx.reply("Select the <strong>propierties</strong> for define", {parse_mode: "HTML", ...keyboard})
+            await reply(ctx, "Select the <strong>propierties</strong> for define", {parse_mode: "HTML", ...keyboard})
         }
 
         async function values() {
@@ -87,169 +88,184 @@ const AppController = {
              * * pr_ = propierty_id
              * * dn_ = done
             */
-            
-            switch (propierty.type) {
-                case "multi_select":
-                    await ctx.reply(`Select the options for add to <strong>${propierty.name}</strong>`, {parse_mode: "HTML", reply_markup: {
+
+            const message = {}
+
+            if (propierty.type === "multi_select") {
+                message.text = `Select the options for add to <strong>${propierty.name}</strong>`
+                message.data = {parse_mode: "HTML", reply_markup: {
+                    inline_keyboard: [
+                        ...propierty.multi_select.options.map(option => {
+                            return [{
+                                text: option.name,
+                                callback_data: "vl_" + option.id + "pr_" + propierty.id + "pi_" + index
+                            }]
+                        }),
+                        [{
+                            text: "✅",
+                            callback_data: "vl_" + "dn_" + "pi_" + index
+                        }]
+                    ]
+                }}
+            }
+
+            if (propierty.type === "phone_number") {
+                ctx.session.waitingForPropiertyValue = {...propierty, index}
+                message.text = `Write the value for <strong>${propierty.name}</strong>`
+                message.data = {parse_mode: "HTML",
+                    reply_markup: {
                         inline_keyboard: [
-                            ...propierty.multi_select.options.map(option => {
+                            [{
+                                text: "🚫",
+                                callback_data: "vl_" + "dn_" + "pi_" + index
+                            }]
+                        ]
+                    }
+                }
+            }
+            if (propierty.type === "number") {
+                ctx.session.waitingForPropiertyValue = {...propierty, index}
+                message.text = `Type the number for <strong>${propierty.name}</strong>`
+                message.data =  {parse_mode: "HTML",
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{
+                                text: "🚫",
+                                callback_data: "vl_" + "dn_" + "pi_" + index
+                            }]
+                        ]
+                    }
+                }
+            }
+            if (propierty.type === "checkbox") {
+                message.text = `Select if the checkbox <strong>${propierty.name}</strong> stays checked or not`
+                message.data = {parse_mode: "HTML",
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{
+                                text: "Checked",
+                                callback_data: "vl_" + true + "pr_" + propierty.id + "pi_" + index
+                            }],
+                            [{
+                                text: "Unchecked",
+                                callback_data: "vl_" + false + "pr_" + propierty.id + "pi_" + index
+                            }],
+                            [{
+                                text: "🚫",
+                                callback_data: "vl_" + "dn_" + "pi_" + index
+                            }]
+                        ]
+                    }
+                }
+            }
+            if (propierty.type === "select") {
+                message.text = `Select the value for <strong>${propierty.name}</strong> propierty`
+                message.data = {parse_mode: "HTML",
+                    reply_markup: {
+                        inline_keyboard: [
+                            ...propierty.select.options.map(option => {
                                 return [{
                                     text: option.name,
                                     callback_data: "vl_" + option.id + "pr_" + propierty.id + "pi_" + index
                                 }]
                             }),
                             [{
-                                text: "✅",
+                                text: "🚫",
                                 callback_data: "vl_" + "dn_" + "pi_" + index
                             }]
                         ]
-                    }})
-                    break;
-    
-                case "phone_number":
-                    ctx.session.waitingForPropiertyValue = {...propierty, index}
-                    await ctx.reply(`Write the value for <strong>${propierty.name}</strong>`, {parse_mode: "HTML",
-                        reply_markup: {
-                            inline_keyboard: [
-                                [{
-                                    text: "🚫",
-                                    callback_data: "vl_" + "dn_" + "pi_" + index
-                                }]
-                            ]
-                    }})
-                    break; 
-                case "number":
-                    ctx.session.waitingForPropiertyValue = {...propierty, index}
-                    await ctx.reply(`Type the number for <strong>${propierty.name}</strong>`, {parse_mode: "HTML",
-                        reply_markup: {
-                            inline_keyboard: [
-                                [{
-                                    text: "🚫",
-                                    callback_data: "vl_" + "dn_" + "pi_" + index
-                                }]
-                            ]
-                        }
-                    })
-                    break; 
-                case "checkbox":
-                    await ctx.reply(`Select if the checkbox <strong>${propierty.name}</strong> stays checked or not`, {parse_mode: "HTML",
-                        reply_markup: {
-                            inline_keyboard: [
-                                [{
-                                    text: "Checked",
-                                    callback_data: "vl_" + true + "pr_" + propierty.id + "pi_" + index
-                                }],
-                                [{
-                                    text: "Unchecked",
-                                    callback_data: "vl_" + false + "pr_" + propierty.id + "pi_" + index
-                                }],
-                                [{
-                                    text: "🚫",
-                                    callback_data: "vl_" + "dn_" + "pi_" + index
-                                }]
-                            ]
-                        }
-                    })
-                    break;
-                case "select":
-                    await ctx.reply(`Select the value for <strong>${propierty.name}</strong> propierty`, {parse_mode: "HTML",
-                        reply_markup: {
-                            inline_keyboard: [
-                                ...propierty.select.options.map(option => {
-                                    return [{
-                                        text: option.name,
-                                        callback_data: "vl_" + option.id + "pr_" + propierty.id + "pi_" + index
-                                    }]
-                                }),
-                                [{
-                                    text: "🚫",
-                                    callback_data: "vl_" + "dn_" + "pi_" + index
-                                }]
-                            ]
-                        }
-                    })
-                    break; 
-                case "email":
-                    ctx.session.waitingForPropiertyValue = {...propierty, index}
-                    await ctx.reply(`Type the email for <strong>${propierty.name}</strong>`, {parse_mode: "HTML",
-                        reply_markup: {
-                            inline_keyboard: [
-                                [{
-                                    text: "🚫",
-                                    callback_data: "vl_" + "dn_" + "pi_" + index
-                                }]
-                            ]
-                        }
-                    })
-                    break; 
-                case "rich_text":
-                    ctx.session.waitingForPropiertyValue = {...propierty, index}
-                    await ctx.reply(`Type the text for <strong>${propierty.name} propierty</strong>`, {parse_mode: "HTML",
-                        reply_markup: {
-                            inline_keyboard: [
-                                [{
-                                    text: "🚫",
-                                    callback_data: "vl_" + "dn_" + "pi_" + index
-                                }]
-                            ]
-                        }
-                    })
-                    break;
-                case "url":
-                    ctx.session.waitingForPropiertyValue = {...propierty, index}
-                    await ctx.reply(`Type the URL for <strong>${propierty.name}</strong> propierty`, {parse_mode: "HTML",
-                        reply_markup: {
-                            inline_keyboard: [
-                                [{
-                                    text: "🚫",
-                                    callback_data: "vl_" + "dn_" + "pi_" + index
-                                }]
-                            ]
-                        }
-                    })
-                    break;
-                case "title":
-                    ctx.session.waitingForPropiertyValue = {...propierty, index}
-                    await ctx.reply(`Type the <strong>new title</strong>`, {parse_mode: "HTML",
-                        reply_markup: {
-                            inline_keyboard: [
-                                [{
-                                    text: "🚫",
-                                    callback_data: "vl_" + "dn_" + "pi_" + index
-                                }]
-                            ]
-                        }
-                    })
-                    break; 
-                case "files":
-                    ctx.session.waitingForPropiertyValue = {...propierty, index}
-                    await ctx.reply(`Place the URL for <strong>${propierty.name}</strong>`, {parse_mode: "HTML",
-                        reply_markup: {
-                            inline_keyboard: [
-                                [{
-                                    text: "🚫",
-                                    callback_data: "vl_" + "dn_" + "pi_" + index
-                                }]
-                            ]
-                        }
-                    })
-                    break;
-                
-                case "date": 
-                    ctx.session.waitingForPropiertyValue = {...propierty, index}
-                    await ctx.reply(`Type the <strong>${propierty.name}</strong> preferably with one of the following structures:\n\n- <strong>12/25/2022</strong>\n- <strong>12/25/2022 15:00</strong>\n- <strong>12-25-2022 15:00</strong>\n- <strong>2022-05-25T11:00:00</strong>`, {parse_mode: "HTML",
-                        reply_markup: {
-                            inline_keyboard: [
-                                [{
-                                    text: "🚫",
-                                    callback_data: "vl_" + "dn_" + "pi_" + index
-                                }]
-                            ]
-                        }
-                    })
-                default:
-                    return {response: "error"}
-                    break;
+                    }
+                }
+            } 
+            if (propierty.type === "email") {
+                ctx.session.waitingForPropiertyValue = {...propierty, index}
+                message.text = `Type the email for <strong>${propierty.name}</strong>`
+                message.data = {parse_mode: "HTML",
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{
+                                text: "🚫",
+                                callback_data: "vl_" + "dn_" + "pi_" + index
+                            }]
+                        ]
+                    }
+                }
+            } 
+            if (propierty.type === "rich_text") {
+                ctx.session.waitingForPropiertyValue = {...propierty, index}
+                message.text = `Type the text for <strong>${propierty.name} propierty</strong>`
+                message.data = {parse_mode: "HTML",
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{
+                                text: "🚫",
+                                callback_data: "vl_" + "dn_" + "pi_" + index
+                            }]
+                        ]
+                    }
+                }
+            }
+            if (propierty.type === "url") {
+                ctx.session.waitingForPropiertyValue = {...propierty, index}
+                message.text = `Type the URL for <strong>${propierty.name}</strong> propierty`
+                message.data = {parse_mode: "HTML",
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{
+                                text: "🚫",
+                                callback_data: "vl_" + "dn_" + "pi_" + index
+                            }]
+                        ]
+                    }
+                }
+            }
+            if (propierty.type === "title") {
+                ctx.session.waitingForPropiertyValue = {...propierty, index}
+                message.text = `Type the <strong>new title</strong>`
+                message.data = {parse_mode: "HTML",
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{
+                                text: "🚫",
+                                callback_data: "vl_" + "dn_" + "pi_" + index
+                            }]
+                        ]
+                    }
+                }
+            } 
+            if (propierty.type === "files") {
+                ctx.session.waitingForPropiertyValue = {...propierty, index}
+                message.text = `Place the URL for <strong>${propierty.name}</strong>`
+                message.data = {parse_mode: "HTML",
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{
+                                text: "🚫",
+                                callback_data: "vl_" + "dn_" + "pi_" + index
+                            }]
+                        ]
+                    }
+                }
+            }
+            if (propierty.type === "date") {
+                ctx.session.waitingForPropiertyValue = {...propierty, index}
+                message.text = `Type the <strong>${propierty.name}</strong> preferably with one of the following structures:\n\n- <strong>12/25/2022</strong>\n- <strong>12/25/2022 15:00</strong>\n- <strong>12-25-2022 15:00</strong>\n- <strong>2022-05-25T11:00:00</strong>`
+                message.data = {parse_mode: "HTML",
+                reply_markup: {
+                        inline_keyboard: [
+                            [{
+                                text: "🚫",
+                                callback_data: "vl_" + "dn_" + "pi_" + index
+                            }]
+                        ]
+                    }
+                }
+            }
+
+            if (message.text) {
+                reply(ctx, message.text, message.data)
+            } else {
+                return {response: "error"}
             }
         }
 
