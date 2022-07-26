@@ -8,7 +8,6 @@ const announcementHandler = require('./middlewares/announcementHandler');
 const chatAction = require('./middlewares/chatAction');
 const checkSessionsSize = require('./middlewares/checkSessionsSize');
 const oldBotMessage = require('./middlewares/oldBotMessage');
-const tryCatch = require("./middlewares/tryCatch")
 
 //Commands
 const start = require('./commands/start');
@@ -73,9 +72,6 @@ bot.use(oldBotMessage)
 
 //Set a middleware for check if for each session array, one is full of null objects. In that case, clean it
 bot.use(checkSessionsSize)
-
-//Set a middleware for wrap the entire bot in a try catch sentence
-bot.use(tryCatch)
 
 //* ---------------- COMMANDS ----------------
 
