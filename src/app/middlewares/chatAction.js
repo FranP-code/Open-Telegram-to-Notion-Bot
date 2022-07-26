@@ -1,6 +1,10 @@
-function chatAction(ctx, next) {
+async function chatAction(ctx, next) {
     if (!ctx.update.callback_query) {
-        ctx.replyWithChatAction("typing")
+        try {
+            await ctx.replyWithChatAction("typing")
+        } catch (err) {
+            console.log(err)
+        }
     }
     next()
 }
