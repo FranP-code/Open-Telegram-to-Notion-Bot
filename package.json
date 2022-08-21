@@ -19,12 +19,12 @@
     "@notionhq/client": "^1.0.4",
     "axios": "^0.27.2",
     "dotenv": "^16.0.0",
-    "grammy": "^1.7.2",
-    "moment": "^2.29.3",
-    "mongoose": "^6.2.10"
+    "grammy": "^1.10.1",
+    "moment": "^2.29.4",
+    "mongoose": "^6.5.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.19"
   },
   "repository": {
     "type": "git",
