@@ -8,6 +8,7 @@ const announcementHandler = require('./middlewares/announcementHandler');
 const chatAction = require('./middlewares/chatAction');
 const checkSessionsSize = require('./middlewares/checkSessionsSize');
 const oldBotMessage = require('./middlewares/oldBotMessage');
+const clearHandler = require('./middlewares/clearHandler');
 
 //Commands
 const start = require('./commands/start');
@@ -16,6 +17,7 @@ const help = require('./commands/help');
 const announcement = require('./commands/announcement');
 const roadmap = require('./commands/roadmap');
 const feedback = require('./commands/feedback');
+const clear = require('./commands/clear')
 
 //Events
 const onText = require('./events/onText');
@@ -65,6 +67,9 @@ bot.use(authCodeHandler)
 //Set a middleware for check if the bot is waiting the announcement and make it
 bot.use(announcementHandler)
 
+//Clear command handler
+bot.use(clearHandler)
+
 //Set a middleware for send a 'typing' state every time the bot is called
 bot.use(chatAction)
 
@@ -72,6 +77,7 @@ bot.use(chatAction)
 bot.use(oldBotMessage)
 
 //Set a middleware for check if for each session array, one is full of null objects. In that case, clean it
+//! Keep at bottom of the middlewares
 bot.use(checkSessionsSize)
 
 //* ---------------- COMMANDS ----------------
@@ -93,6 +99,9 @@ bot.command("roadmap", roadmap)
 
 // Feedback command
 bot.command("feedback", feedback)
+
+// Clear command
+bot.command("clear", clear)
 
 /*
  * Little note: all the commands are before the events of the bot
