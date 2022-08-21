@@ -19,7 +19,7 @@
     "@notionhq/client": "^1.0.4",
     "axios": "^0.27.2",
     "dotenv": "^16.0.0",
-    "grammy": "^1.10.1",
+    "grammy": "1.7.2",
     "moment": "^2.29.4",
     "mongoose": "^6.5.2"
   },
