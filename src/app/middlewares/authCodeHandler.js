@@ -9,24 +9,20 @@ async function authCodeHandler(ctx, next) {
         const response = await DatabaseQuerys().uploadApiKey(ctx.from.id, ctx.message.text)
 
         let message
-
-        if (response.status === "error" && response.message === "Auth key not valid") {
-            message = "Auth code not valid, type /auth again"
-            return
-        }
         
         if (response.status === "success"){
-            message = "Auth code registered 👍\n\nSend a message to *add it to the database you select*", {parse_mode: "MarkdownV2"}
-            return
+            message = "Auth code registered 👍\n\nSend a message to <strong>add it to the database you select</strong>"
         }
 
         if (response.status === "error") {
-            message = "Unknow error, please try again later"
-            return
+            if (response.message === "Auth key not valid") {
+                message = "Auth code not valid, type /auth again"
+            } else {
+                message = "Unknow error, please try again later"
+            }
         }
 
         reply(ctx, message)
-
     } else {
         await next()
     }
