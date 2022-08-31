@@ -1,4 +1,4 @@
-# Telegram to Notion Bot Website
+# Open Telegram to Notion Bot Website
 
 <p align="center">
     <img src="https://i.ibb.co/0CtRtBk/index.png" alt="index" border="0">
