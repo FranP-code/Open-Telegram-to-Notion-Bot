@@ -43,6 +43,7 @@ This bot receive the text that you send and store it on one selected database of
 # Additional
 
 Dont forget to check also:
-- [Telegram to Notion Bot website's](https://github.com/FranP-code/Telegram-to-Notion-Website) repository
-- [Telegram to Notion Roadmap](https://franpcode.notion.site/franpcode/3ef68732c1f9426dbdaba21e20dc3509?v=660b09746d4d4ede877a477d3b628f02)
+- [Open Telegram to Notion Bot website's](https://github.com/FranP-code/Open-Telegram-to-Notion-Website) repository
+- [Open Telegram to Notion Bot backend](https://github.com/FranP-code/Open-Telegram-to-Notion-Backend) repository
+- [Open Telegram to Notion Roadmap](https://franpcode.notion.site/franpcode/3ef68732c1f9426dbdaba21e20dc3509?v=660b09746d4d4ede877a477d3b628f02)
 <!-- </> with 💛 by readMD (https://readmd.itsvg.in) -->
