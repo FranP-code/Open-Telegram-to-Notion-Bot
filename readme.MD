@@ -19,19 +19,19 @@
     <img alt="GitHub forks" src="https://img.shields.io/github/forks/FranP-Code/Telegram-To-Notion-Bot?style=flat-square">
 </p>
 
-# Description
+## Description
 This bot receive the text that you send and store it on one selected database of Notion.
 
-# Features
+## Features
 - Save texts on your Notion database
 - Save images on your Notion database
 - Define the properties of the new page of your database
 - 100% Open Source and Free
-# Screenshots
+## Screenshots
  <img src="https://i.ibb.co/z73qrqg/index.png">
  <img src="https://i.ibb.co/pJ10w9j/Telegram-To-Notion-Bot-Demo-Acelerated.gif">
 
-# Tech Used
+## Tech Used
  ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
  ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
  ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
@@ -40,7 +40,7 @@ This bot receive the text that you send and store it on one selected database of
  </a>
  <a href="https://grammy.dev">![Grammy](https://img.shields.io/badge/GrammY-009dca.svg?style=for-the-badge&logo=grammy&logoColor=white)</a>
 
-# Additional
+## Additional
 
 Dont forget to check also:
 - [Open Telegram to Notion Bot website's](https://github.com/FranP-code/Open-Telegram-to-Notion-Website) repository
