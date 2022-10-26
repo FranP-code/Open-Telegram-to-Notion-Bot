@@ -46,4 +46,32 @@ Dont forget to check also:
 - [Open Telegram to Notion Bot website's](https://github.com/FranP-code/Open-Telegram-to-Notion-Website) repository
 - [Open Telegram to Notion Bot backend](https://github.com/FranP-code/Open-Telegram-to-Notion-Backend) repository
 - [Open Telegram to Notion Roadmap](https://franpcode.notion.site/franpcode/3ef68732c1f9426dbdaba21e20dc3509?v=660b09746d4d4ede877a477d3b628f02)
+
+### Installation instructions
+1. Clone this repository using `git clone https://github.com/FranP-code/Open-Telegram-to-Notion-Bot.git`
+2. Host and run the [Open Telegram to Notion Bot website](https://github.com/FranP-code/Open-Telegram-to-Notion-Website) and the [Open Telegram to Notion Bot backend](https://github.com/FranP-code/Open-Telegram-to-Notion-Backend)
+3. Make a `.env` file in the root of this project with the following data (don't share it with anyone):
+    ```
+      BOT_TOKEN_DEV = 1.
+      BOT_TOKEN_PROD = 2.
+      ENCRYPT_IV = 3.
+      ENCRYPT_KEY = 4.
+      IMGBB_API_KEY = 5.
+      MONGODB_LINK = 6.
+      MY_USER_ID = 7.
+      NODE_ENV = (development or production)
+      NOTION_INTEGRATION_ID = 8.
+      WEBSITE_URL = 9.
+    ```
+    - **1. and 2.** get the Telegram token from [Bot Father](https://telegram.me/BotFather) for your test bot and your production bot
+    - **3. and 4.** generate your IV code and your KEY for the [Crypto Module from Node.js](https://www.w3schools.com/nodejs/ref_crypto.asp)
+    - **5.** get your API KEY from [ImgBB](https://imgbb.com)
+    - **6.** get your MongoDB link, including the password in the link
+    - **7.** get your `userId` from Telegram
+    - **8.** get your `integrationId` from [Notion](https://www.notion.so/help/add-and-manage-connections-with-the-api)
+    - **9.** url where is hosted the your Open Telegram to Notion Bot
+
+4. You have to change the backend url on the website.
+  *(i'm gonna modularizate it with the .env another day...)*
+5. `npm run start` or `npm run dev` and should work.
 <!-- </> with 💛 by readMD (https://readmd.itsvg.in) -->
