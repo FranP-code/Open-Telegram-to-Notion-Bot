@@ -274,10 +274,8 @@ const AppController = {
             values
         }
     },
-
     generateKeyboard: {
         databases(databases, cancelOperationText, dataType, sessionStorage) {
-
             /**
              * * db_ = database_prefix
              * * dt_ = dataType

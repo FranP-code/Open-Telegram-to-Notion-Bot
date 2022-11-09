@@ -24,17 +24,29 @@ function NotionQuerys(authCode) {
     }
 
     async function returnAllDatabases() {
-
         try {
-            const response = await notion.search({
-                filter: {
-                    value: "database",
-                    property: "object"
-                }
-            })
-
+            const response = await notion.search()
+            const databases = response.results.filter(result => result.object === 'database')
+            const databasesFormated = []
             response.status = "success"
-            return response
+            for (const database of databases) {
+                if (database.parent.type === 'workspace') {
+                    databasesFormated.push(database)
+                    break;
+                }
+                const parentPage = await notion.pages.retrieve({ page_id: database.parent.page_id });
+                databasesFormated.push({
+                    ...database,
+                    title: database.title.map(titleItem => ({
+                        ...titleItem,
+                        text: {
+                            ...titleItem.text,
+                            content: `${titleItem.text.content} (${parentPage.properties.title.title[0].text.content})`
+                        }
+                    }))
+                })
+            }
+            return {...response, results: databasesFormated}
         } catch(err) {
             console.log(err)
             return {
