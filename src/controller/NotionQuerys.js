@@ -32,7 +32,7 @@ function NotionQuerys(authCode) {
             for (const database of databases) {
                 if (database.parent.type === 'workspace') {
                     databasesFormated.push(database)
-                    break;
+                    continue;
                 }
                 const parentPage = await notion.pages.retrieve({ page_id: database.parent.page_id });
                 databasesFormated.push({
