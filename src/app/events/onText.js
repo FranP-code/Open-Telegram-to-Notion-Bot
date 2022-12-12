@@ -8,121 +8,127 @@ const reply = require("../../scripts/reply")
 async function onText(ctx) {
 
     if (ctx.session.waitingForPropiertyValue) {
-        
-        const index = ctx.session.waitingForPropiertyValue.index
-        const propiertyID = ctx.session.waitingForPropiertyValue.id
+			const index = ctx.session.waitingForPropiertyValue.index;
+			const propiertyID = ctx.session.waitingForPropiertyValue.id;
 
-        let userInput = ctx.message.text.trim()
+			let userInput = ctx.message.text.trim();
 
-        console.log(ctx.session.waitingForPropiertyValue)
-        
-        //If not exists the propierties values propierty, create it
-        if (!ctx.session.dataForAdd[index].propiertiesValues) {
-            ctx.session.dataForAdd[index].propiertiesValues = {}
-        }
+			console.log(ctx.session.waitingForPropiertyValue);
 
-        const propierty = Object.values(ctx.session.dataForAdd[index].propierties).find(prop => {
-            return prop.id === propiertyID
-        })
+			//If not exists the properties values propierty, create it
+			if (!ctx.session.dataForAdd[index].propertiesValues) {
+				ctx.session.dataForAdd[index].propertiesValues = {};
+			}
 
-        const urlReg = new RegExp('^(https?:\\/\\/)?'+ // protocol
-            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-            '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-            '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-            '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
-            //Credits: https://stackoverflow.com/a/5717133/18740899
-        
-        //Check if the value is valid
-        let message
+			const propierty = Object.values(
+				ctx.session.dataForAdd[index].properties
+			).find((prop) => {
+				return prop.id === propiertyID;
+			});
 
-        switch (propierty.type) {
-            case "files":
-                if (!urlReg.test(userInput)) {
-                    message = "This don't look like a URL"
-                }
-                break;
+			const urlReg = new RegExp(
+				"^(https?:\\/\\/)?" + // protocol
+					"((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+					"((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+					"(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+					"(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+					"(\\#[-a-z\\d_]*)?$",
+				"i"
+			); // fragment locator
+			//Credits: https://stackoverflow.com/a/5717133/18740899
 
-            case "number":
-                if (isNaN(parseInt(userInput))) {
-                    message = "That's not a number"
-                }
-                break;
+			//Check if the value is valid
+			let message;
 
-            case "url":
-                if (!urlReg.test(userInput)) {
-                    message = "This don't look like a URL"
-                }
-                break;
+			switch (propierty.type) {
+				case "files":
+					if (!urlReg.test(userInput)) {
+						message = "This don't look like a URL";
+					}
+					break;
 
-            case "date":
-                userInput = moment(userInput).format().toString()
-                if (!moment(userInput).isValid()) {
-                    message = "This don't look like a date"
-                }
-                break;
-                
-            default:
-                break;
-        }
+				case "number":
+					if (isNaN(parseInt(userInput))) {
+						message = "That's not a number";
+					}
+					break;
 
-        if (message) {
-            await reply(ctx, message)
-            return
-        }
+				case "url":
+					if (!urlReg.test(userInput)) {
+						message = "This don't look like a URL";
+					}
+					break;
 
-        //Parse text
-        switch (propierty.type) {
+				case "date":
+					userInput = moment(userInput).format().toString();
+					if (!moment(userInput).isValid()) {
+						message = "This don't look like a date";
+					}
+					break;
 
-            case "files":
-                userInput = [
-                    {
-                        "type": "external",
-                        "name": userInput,
-                        "external": {
-                            "url": userInput
-                        }
-                    }
-                ]
-                break;
-            case "number":
-                userInput = parseInt(userInput)
-                break;
+				default:
+					break;
+			}
 
-            case "rich_text":
-                userInput = [{type: "text", text: {content: userInput}}]
-                break;
+			if (message) {
+				await reply(ctx, message);
+				return;
+			}
 
-            case "title":
-                ctx.session.dataForAdd[index].data.title = userInput
-                userInput = [{text: {content: userInput}}]
-                break;
+			//Parse text
+			switch (propierty.type) {
+				case "files":
+					userInput = [
+						{
+							type: "external",
+							name: userInput,
+							external: {
+								url: userInput,
+							},
+						},
+					];
+					break;
+				case "number":
+					userInput = parseInt(userInput);
+					break;
 
-            case "date":
-                userInput = {start: userInput}
-                break;
-            default:
-                break;
-        }
+				case "rich_text":
+					userInput = [{ type: "text", text: { content: userInput } }];
+					break;
 
-        //Save value on storage
-        ctx.session.dataForAdd[index].propiertiesValues[propiertyID] = userInput
-        
-        //Confirm to user the saved prop
-        try {
-            await reply(ctx, `Data added to ${propierty.name}`)
-            await deleteMessage(ctx, ctx.update.message.message_id - 1)
-        } catch (err) {
-            console.log(err)
-        }
-        //Return the list of propierties to user
-        AppController.t_response(ctx).propierties(ctx.from.id, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
-        
-        //App not longer waits for propierty value...
-        ctx.session.waitingForPropiertyValue = false
+				case "title":
+					ctx.session.dataForAdd[index].data.title = userInput;
+					userInput = [{ text: { content: userInput } }];
+					break;
 
-        return
-    }
+				case "date":
+					userInput = { start: userInput };
+					break;
+				default:
+					break;
+			}
+
+			//Save value on storage
+			ctx.session.dataForAdd[index].propertiesValues[propiertyID] = userInput;
+
+			//Confirm to user the saved prop
+			try {
+				await reply(ctx, `Data added to ${propierty.name}`);
+				await deleteMessage(ctx, ctx.update.message.message_id - 1);
+			} catch (err) {
+				console.log(err);
+			}
+			//Return the list of properties to user
+			AppController.t_response(ctx).properties(
+				ctx.from.id,
+				ctx.session.dataForAdd[index].listOfpropertiesQuery
+			);
+
+			//App not longer waits for propierty value...
+			ctx.session.waitingForPropiertyValue = false;
+
+			return;
+		}
 
     //Get databases
     const databases = await AppController.notion.getDatabases(ctx?.from?.id)

@@ -55,35 +55,33 @@ function NotionQuerys(authCode) {
         }
     }
 
-    async function addBlockToDatabase(databaseId, title, propierties) {
+    async function addBlockToDatabase(databaseId, title, properties) {
+			try {
+				const response = await notion.pages.create({
+					parent: {
+						database_id: databaseId,
+					},
+					properties: {
+						title: [
+							{
+								text: {
+									content: title,
+								},
+							},
+						],
+						...properties,
+					},
+				});
 
-        try {
-            const response = await notion.pages.create({
-                parent: {
-                    database_id: databaseId
-                },
-                properties: {
-                    title: [
-                        {
-                            text: {
-                                content: title
-                            }
-                        }
-                    ],
-                    ...propierties
-                }
-            })
-
-            response.status = "success"
-            return response
-
-        } catch (err) {
-            console.log(err)
-            return {
-                status: "error"
-            }
-        }
-    }
+				response.status = "success";
+				return response;
+			} catch (err) {
+				console.log(err);
+				return {
+					status: "error",
+				};
+			}
+		}
 
     async function getDatabaseData(databaseId) {
         try {
@@ -103,32 +101,32 @@ function NotionQuerys(authCode) {
             switch (config.blockType) {
                 case "image":
                     response = await notion.pages.create({
-                        parent: {
-                            database_id
-                        },
-                        properties: {
-                            title: [
-                                {
-                                    text: {
-                                        content: config.title
-                                    }
-                                }
-                            ],
-                            ...config.propierties
-                        },
-                        children: [
-                            {
-                                object: "block",
-                                type: "image",
-                                image: {
-                                    type: "external",
-                                    external: {
-                                        url: config.imageURL
-                                    }
-                                }
-                            }
-                        ]
-                    })
+											parent: {
+												database_id,
+											},
+											properties: {
+												title: [
+													{
+														text: {
+															content: config.title,
+														},
+													},
+												],
+												...config.properties,
+											},
+											children: [
+												{
+													object: "block",
+													type: "image",
+													image: {
+														type: "external",
+														external: {
+															url: config.imageURL,
+														},
+													},
+												},
+											],
+										});
 
                     response.databaseData = await getDatabaseData(database_id)
                     break;

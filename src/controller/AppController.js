@@ -8,59 +8,73 @@ const reply = require("../scripts/reply")
 const AppController = {
 
     t_response(ctx) {
-        async function propierties(userID, callback_query) {
-            const index = parseInt(extractSubstring(callback_query ? callback_query : ctx.update.callback_query.data, "in_", false))
-            
-            if (!ctx.session.dataForAdd[index]) {
-                reportError(ctx)
-                return
-            }
-        
-            //Config initialization
-            let config
-    
-            if (callback_query) {
-                config = callback_query
-            } else {
-                config = ctx.update.callback_query.data
-            }
+        async function properties(userID, callback_query) {
+					const index = parseInt(
+						extractSubstring(
+							callback_query ? callback_query : ctx.update.callback_query.data,
+							"in_",
+							false
+						)
+					);
 
-            ctx.session.dataForAdd[index].listOfPropiertiesQuery = config
-    
-            //In case that the cancel button is pressed
-            if (config.includes("co_")) {
+					if (!ctx.session.dataForAdd[index]) {
+						reportError(ctx);
+						return;
+					}
 
-                //Make value null
-                ctx.session.dataForAdd[index] = null
-    
-                //Reply
-                reply(ctx, `Operation canceled 👍`, {parse_mode: "HTML"})
-                return
-            }
-    
-            //Get database id
-            const databaseID = extractSubstring(config, "db_", "dt_")
-    
-            //If not are saved, get propierties of database
-            let properties
-    
-            if (!ctx.session.dataForAdd[index].propierties) {
-    
-                propierties = await AppController.notion.getPropierties(userID, databaseID)
+					//Config initialization
+					let config;
 
-                //Save propierties in data session
-                ctx.session.dataForAdd[index].propierties = propierties
+					if (callback_query) {
+						config = callback_query;
+					} else {
+						config = ctx.update.callback_query.data;
+					}
 
-                //Save databaseID
-                ctx.session.dataForAdd[index].databaseID = databaseID
-            } else {
-                propierties = ctx.session.dataForAdd[index].propierties
-            }
-    
-            //Reply with propierties of the database
-            const keyboard = await AppController.generateKeyboard.propierties(Object.values(propierties), index)
-            await reply(ctx, "Select the <strong>propierties</strong> for define", {parse_mode: "HTML", ...keyboard})
-        }
+					ctx.session.dataForAdd[index].listOfpropertiesQuery = config;
+
+					//In case that the cancel button is pressed
+					if (config.includes("co_")) {
+						//Make value null
+						ctx.session.dataForAdd[index] = null;
+
+						//Reply
+						reply(ctx, `Operation canceled 👍`, { parse_mode: "HTML" });
+						return;
+					}
+
+					//Get database id
+					const databaseID = extractSubstring(config, "db_", "dt_");
+
+					//If not are saved, get properties of database
+					let properties;
+
+					if (!ctx.session.dataForAdd[index].properties) {
+						properties = await AppController.notion.getproperties(
+							userID,
+							databaseID
+						);
+
+						//Save properties in data session
+						ctx.session.dataForAdd[index].properties = properties;
+
+						//Save databaseID
+						ctx.session.dataForAdd[index].databaseID = databaseID;
+					} else {
+						properties = ctx.session.dataForAdd[index].properties;
+					}
+
+					//Reply with properties of the database
+					const keyboard = await AppController.generateKeyboard.properties(
+						Object.values(properties),
+						index
+					);
+					await reply(
+						ctx,
+						"Select the <strong>properties</strong> for define",
+						{ parse_mode: "HTML", ...keyboard }
+					);
+				}
 
         async function values() {
             //Get propierty ID
@@ -76,10 +90,10 @@ const AppController = {
             }
 
             //Save this callbackQuery
-            ctx.session.dataForAdd[index].propiertiesQuery = ctx.update.callback_query.data
+            ctx.session.dataForAdd[index].propertiesQuery = ctx.update.callback_query.data
 
             //Get the propierty with the selected ID
-            const propierty = Object.values(data.propierties).find(obj => {
+            const propierty = Object.values(data.properties).find(obj => {
                 return obj.id === propID
             })
 
@@ -270,7 +284,7 @@ const AppController = {
         }
 
         return {
-            propierties,
+            properties,
             values
         }
     },
@@ -317,48 +331,62 @@ const AppController = {
             }
         },
 
-        propierties(propierties, dataIndex) {
-            /**
-             * * pr_ = propierty prefix
-             * * in_ = data index
-             * * sd_ = send
-             * * co_ = cancel operation
-            */
-    
-            //Filter the propierties for only keep the valid ones
-            const validTypes = ["multi_select", "phone_number", "number", "checkbox", "select", "email", "rich_text", "url", "title", "files", "date"]
-    
-            propierties = propierties.filter(prop => {
-                if (validTypes.includes(prop.type)) {
-                    return prop
-                }
-            })
-    
-            return {
-                reply_markup: {
-                    inline_keyboard: [
-                        ...propierties.map((prop) => {
-                                return [{
-                                    text: prop.name,
-                                    callback_data: "pr_" + prop.id + "in_" + dataIndex
-                                }]
-                            }),
-                            [
-                                {
-                                    text: "✅",
-                                    callback_data: "pr_" + "sd_" + "in_" + dataIndex
-                                }
-                            ],
-                            [
-                                {
-                                    text: "🚫",
-                                    callback_data: "pr_" + "co_" + "in_" + dataIndex
-                                }
-                            ]
-                    ]
-                }
-            }
-        }
+        properties(properties, dataIndex) {
+					/**
+					 * * pr_ = propierty prefix
+					 * * in_ = data index
+					 * * sd_ = send
+					 * * co_ = cancel operation
+					 */
+
+					//Filter the properties for only keep the valid ones
+					const validTypes = [
+						"multi_select",
+						"phone_number",
+						"number",
+						"checkbox",
+						"select",
+						"email",
+						"rich_text",
+						"url",
+						"title",
+						"files",
+						"date",
+					];
+
+					properties = properties.filter((prop) => {
+						if (validTypes.includes(prop.type)) {
+							return prop;
+						}
+					});
+
+					return {
+						reply_markup: {
+							inline_keyboard: [
+								...properties.map((prop) => {
+									return [
+										{
+											text: prop.name,
+											callback_data: "pr_" + prop.id + "in_" + dataIndex,
+										},
+									];
+								}),
+								[
+									{
+										text: "✅",
+										callback_data: "pr_" + "sd_" + "in_" + dataIndex,
+									},
+								],
+								[
+									{
+										text: "🚫",
+										callback_data: "pr_" + "co_" + "in_" + dataIndex,
+									},
+								],
+							],
+						},
+					};
+				}
     },
 
     notion: {
@@ -380,14 +408,20 @@ const AppController = {
             const notionAuthKey = await DatabaseQuerys().getNotionAuthKey(userID)
         
             console.log(data)
-            const response = await NotionQuerys(notionAuthKey.data).addBlockToDatabase(databaseId, data.data.title, data.propiertiesValues)
+            const response = await NotionQuerys(
+							notionAuthKey.data
+						).addBlockToDatabase(
+							databaseId,
+							data.data.title,
+							data.propertiesValues
+						);
             const databaseData = await NotionQuerys(notionAuthKey.data).getDatabaseData(databaseId)
     
             response.databaseTitle = databaseData.title.length <= 0 ?  "Untitled" : databaseData.title[0].text.content
             return response
         },
     
-        async addImageToDatabase(userID, databaseID, imageURL, title, propierties) {
+        async addImageToDatabase(userID, databaseID, imageURL, title, properties) {
     
             try {
                 const uploadResponse = await DatabaseQuerys().uploadAndGetImageURL(imageURL)
@@ -398,13 +432,14 @@ const AppController = {
     
                 const notionAuthKey = await DatabaseQuerys().getNotionAuthKey(userID)
     
-                const response = await NotionQuerys(notionAuthKey.data)
-                    .createPageWithBlock(databaseID, {
-                        blockType: "image",
-                        imageURL: uploadResponse.data.url,
-                        title: title,
-                        propierties: propierties
-                    })
+                const response = await NotionQuerys(
+									notionAuthKey.data
+								).createPageWithBlock(databaseID, {
+									blockType: "image",
+									imageURL: uploadResponse.data.url,
+									title: title,
+									properties: properties,
+								});
                 console.log(response)
     
                 return {status: "success", databaseTitle: response.databaseData.title.length <= 0 ?  "Untitled" : response.databaseData.title[0].text.content}
@@ -414,7 +449,7 @@ const AppController = {
             }
         },
     
-        async getPropierties(userID, databaseID) {
+        async getproperties(userID, databaseID) {
             try {
                 const notionAuthKey = await DatabaseQuerys().getNotionAuthKey(userID)
                 

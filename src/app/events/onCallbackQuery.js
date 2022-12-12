@@ -18,7 +18,7 @@ async function onCallbackQuery(ctx) {
 
     switch (prefix) {
         case "db_": {
-            await AppController.t_response(ctx).propierties(userID)
+            await AppController.t_response(ctx).properties(userID);
             
             //Delete the previous message
             deleteMessage(ctx, ctx.update.callback_query.message.message_id)
@@ -78,7 +78,14 @@ async function onCallbackQuery(ctx) {
                         const image = data.data
                         image.title = image.title ? image.title : image.file_path
 
-                        response = await AppController.notion.addImageToDatabase(userID, data.databaseID, `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${image.file_path}`, image.title, data.propiertiesValues)
+                        response =
+													await AppController.notion.addImageToDatabase(
+														userID,
+														data.databaseID,
+														`https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${image.file_path}`,
+														image.title,
+														data.propertiesValues
+													);
 
                         if (response.status !== "error") {
                             message.text = `<strong>${image.title.length > 20 ? image.title + "\n\n</strong>" : image.title + "</strong> "}added to <strong>${response.databaseTitle}</strong> database 👍`
@@ -131,7 +138,10 @@ async function onCallbackQuery(ctx) {
                 //Delete the previous message
                 await deleteMessage(ctx, ctx.update.callback_query.message.message_id)
 
-                AppController.t_response(ctx).propierties(userID, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
+                AppController.t_response(ctx).properties(
+									userID,
+									ctx.session.dataForAdd[index].listOfpropertiesQuery
+								);
                 return
             }
 
@@ -139,19 +149,22 @@ async function onCallbackQuery(ctx) {
             const propiertyID = extractSubstring(ctx.update.callback_query.data, "pr_", "pi_")
 
             //Get propierty data
-            const propierty = Object.values(ctx.session.dataForAdd[index].propierties).find(prop => {
-                return prop.id === propiertyID
-            })
+            const propierty = Object.values(
+							ctx.session.dataForAdd[index].properties
+						).find((prop) => {
+							return prop.id === propiertyID;
+						});
 
             //Get optionID
             const optionID = extractSubstring(ctx.update.callback_query.data, "vl_", "pr_")
 
-            //If not exists the propierties values propierty, create it
-            if (!ctx.session.dataForAdd[index].propiertiesValues) {
-                ctx.session.dataForAdd[index].propiertiesValues = {}
+            //If not exists the properties values propierty, create it
+            if (!ctx.session.dataForAdd[index].propertiesValues) {
+                ctx.session.dataForAdd[index].propertiesValues = {}
             }
 
-            const propiertyValue = ctx.session.dataForAdd[index].propiertiesValues[propiertyID]
+            const propiertyValue =
+							ctx.session.dataForAdd[index].propertiesValues[propiertyID];
 
             const message = {}
 
@@ -164,11 +177,21 @@ async function onCallbackQuery(ctx) {
 
                     if (propiertyValue) {
                         // If the array don't include the propierty id, add it
-                        if (!Object.keys(ctx.session.dataForAdd[index].propiertiesValues[propiertyID]).includes(data)) {
-                            ctx.session.dataForAdd[index].propiertiesValues[propiertyID] = [...propiertyValue, data]
-                        }
+                        if (
+													!Object.keys(
+														ctx.session.dataForAdd[index].propertiesValues[
+															propiertyID
+														]
+													).includes(data)
+												) {
+													ctx.session.dataForAdd[index].propertiesValues[
+														propiertyID
+													] = [...propiertyValue, data];
+												}
                     } else {
-                        ctx.session.dataForAdd[index].propiertiesValues[propiertyID] = [data]
+                        ctx.session.dataForAdd[index].propertiesValues[
+													propiertyID
+												] = [data];
                     }
 
                     message.text = `<strong>${data.name}</strong> value added`
@@ -182,7 +205,9 @@ async function onCallbackQuery(ctx) {
                     const p_data = JSON.parse(optionID)
                     
                     //Add it to the values
-                    ctx.session.dataForAdd[index].propiertiesValues[propiertyID] = p_data
+                    ctx.session.dataForAdd[index].propertiesValues[
+											propiertyID
+										] = p_data;
                     
                     //Reply
                     message.text = `<strong>${propierty.name}</strong> is <strong>${p_data ? "checked" : "unchecked"}</strong>`
@@ -191,8 +216,8 @@ async function onCallbackQuery(ctx) {
                     //Delete the checked selector
                     await deleteMessage(ctx, ctx.update.callback_query.message.message_id)
 
-                    //Reply with propierties list
-                    AppController.t_response(ctx).propierties(userID, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
+                    //Reply with properties list
+                    AppController.t_response(ctx).properties(userID, ctx.session.dataForAdd[index].listOfpropertiesQuery)
                  
                     break; 
                 }
@@ -203,7 +228,9 @@ async function onCallbackQuery(ctx) {
                         return option.id === optionID
                     })
   
-                    ctx.session.dataForAdd[index].propiertiesValues[propiertyID] = data
+                    ctx.session.dataForAdd[index].propertiesValues[
+											propiertyID
+										] = data;
 
                     //Reply
                     message.text = `<strong>${data.name}</strong> value added`
@@ -212,8 +239,8 @@ async function onCallbackQuery(ctx) {
                     //Delete the checked selector
                     await deleteMessage(ctx, ctx.update.callback_query.message.message_id)
 
-                    //Reply with propierties list
-                    AppController.t_response(ctx).propierties(userID, ctx.session.dataForAdd[index].listOfPropiertiesQuery)
+                    //Reply with properties list
+                    AppController.t_response(ctx).properties(userID, ctx.session.dataForAdd[index].listOfpropertiesQuery)
                     break;
             
                 }
