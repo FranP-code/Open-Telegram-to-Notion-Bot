@@ -5,14 +5,11 @@ import { Link } from 'wouter'
 function Header() {
 
     const HeaderStyles = styled.header`
-        
-        height: 15vh;
-
         display: flex;
         justify-content: space-between;
         align-items: center;
 
-        padding: 0px 2vw;
+        padding: 3vh 2vw;
 
         border-bottom: 1px solid #eee;
 
@@ -67,7 +64,7 @@ function Header() {
             <Link href='/'>
                 <div className='logotype'>
                     <img src={icon} alt="Page icon"></img>
-                    <h1>Telegram to Notion Bot</h1>
+                    <h1>Open Telegram to Notion Bot</h1>
                 </div>
             </Link>
             <div className="links">

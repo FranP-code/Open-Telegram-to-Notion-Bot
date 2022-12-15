@@ -1,5 +1,6 @@
 import background from './background.svg'
 import styled from "styled-components"
+import Wave from 'react-wavify'
 
 function Index() {
 
@@ -13,7 +14,6 @@ function Index() {
 
         aspect-ratio: 960/300;
 
-        background-image: url(${background});
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;
@@ -92,19 +92,30 @@ function Index() {
     ]
 
     return (
-        <IndexStyles className="index">
-            <ul className="title-list">
-                {
-                    listData.map((obj, index) => (
-                        <li key={index}>
-                            {obj.link ? <a href={obj.link} target="_blank" children={<h2>› {obj.text}</h2>} rel="noreferrer"/> : <h2>› {obj.text}</h2>}
-                            {obj.secondaryText ? <span>&nbsp;{obj.secondaryText}</span> : null}
-                        </li>
-                    ))
-                }
-            </ul>
-            <a className="link-to-bot" href="https://t.me/TelegrmToNotionBot" target="_blank" children="Check it out" rel="noreferrer"/>
-        </IndexStyles>
+        <>
+            <IndexStyles className="index">
+                <ul className="title-list">
+                    {
+                        listData.map((obj, index) => (
+                            <li key={index}>
+                                {obj.link ? <a href={obj.link} target="_blank" children={<h2>› {obj.text}</h2>} rel="noreferrer"/> : <h2>› {obj.text}</h2>}
+                                {obj.secondaryText ? <span>&nbsp;{obj.secondaryText}</span> : null}
+                            </li>
+                        ))
+                    }
+                </ul>
+                <a className="link-to-bot" href="https://t.me/OpenTelegramToNotionBot" target="_blank" children="Check it out" rel="noreferrer"/>
+            </IndexStyles>
+            <Wave fill='#4797ff'
+                paused={false}
+                options={{
+                    height: 20,
+                    amplitude: 40,
+                    speed: 0.15,
+                    points: 3
+                }}
+            />
+        </>
     )
 }
 
