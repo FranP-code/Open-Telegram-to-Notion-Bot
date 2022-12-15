@@ -30,6 +30,8 @@ const bot = new Bot(
     process.env.NODE_ENV === "production" ? process.env.BOT_TOKEN_PROD : process.env.BOT_TOKEN_DEV
 )
 
+bot.api.sendMessage(process.env.MY_USER_ID, "working", {parse_mode: "HTML"})
+
 bot.catch((err, next) => {
   const ctx = err.ctx;
   console.error(`Error while handling update ${ctx.update.update_id}:`);
