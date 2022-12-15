@@ -70,11 +70,12 @@ function Auth() {
                                     <code
                                         className="code-selection"
                                         onClick={() => {
-                                            navigator.clipboard.writeText(permanentCode)
-                                            setNotification("Text copied to clipboard!")
+                                            navigator.clipboard.writeText(permanentCode).then(() => {  
+                                                setNotification("Text copied to clipboard!")
+                                            })
                                         }}
                                     >
-                                        {permanentCode}
+                                        {permanentCode || 'lorem ipsum'}
                                     </code>
                                 </div>
                             </>
