@@ -5,8 +5,7 @@
   "scripts": {
     "start": "node src/app/app.js",
     "dev": "nodemon -L src/app/app.js",
-    "docker-dev": "docker-compose build && docker-compose up "
- 
+    "docker-dev": "docker-compose build --build-arg NODE_ENV=development && docker-compose up"
   },
   "keywords": [
     "telegram",

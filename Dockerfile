@@ -14,4 +14,4 @@ RUN yarn
 
 ARG NODE_ENV
 
-CMD if [ "$NODE_ENV" = "production" ] ; then yarn run start ; else yarn run dev ; fi
+CMD if [ "$NODE_ENV" = "development" ] ; then yarn run dev ; else yarn run start ; fi
