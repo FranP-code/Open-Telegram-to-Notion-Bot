@@ -6,4 +6,4 @@ services:
     ports:
       - "80:80"
     enviroment:
-      - REACT_APP_ENV_MODE
+      - REACT_APP_ENV_MODE: ${REACT_APP_ENV_MODE}
