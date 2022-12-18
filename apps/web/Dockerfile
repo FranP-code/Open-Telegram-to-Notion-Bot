@@ -1,5 +1,6 @@
 FROM alpine:latest as build
 ARG REACT_APP_ENV_MODE
+RUN echo "Oh dang look at that $some_variable_name"
 
 RUN apk add --update nodejs npm
 RUN npm install --global yarn
