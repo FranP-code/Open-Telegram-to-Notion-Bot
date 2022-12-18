@@ -42,7 +42,7 @@ function Auth() {
             setPermanentCode(res ? res.data.access_token : null)
         })
         .catch(err => {
-            console.log(err.response)
+            console.log(err)
             setPermanentCode(false)
         })
         .finally(() => {
