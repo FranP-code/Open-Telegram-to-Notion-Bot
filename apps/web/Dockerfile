@@ -9,7 +9,7 @@ COPY [".", "/usr/src"]
 WORKDIR "/usr/src"
 
 RUN yarn
-RUN yarn build ${REACT_APP_ENV_MODE}
+RUN yarn build REACT_APP_ENV_MODE=${REACT_APP_ENV_MODE}
 
 FROM nginx:1.23.1-alpine
 EXPOSE 80
