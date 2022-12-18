@@ -1,6 +1,5 @@
 FROM alpine:latest as build
 ARG REACT_APP_ENV_MODE
-RUN echo "Oh dang look at that $some_variable_name"
 
 RUN apk add --update nodejs npm
 RUN npm install --global yarn
@@ -10,7 +9,7 @@ COPY [".", "/usr/src"]
 WORKDIR "/usr/src"
 
 RUN yarn
-RUN yarn build
+RUN yarn build ${REACT_APP_ENV_MODE}
 
 FROM nginx:1.23.1-alpine
 EXPOSE 80
