@@ -75,7 +75,7 @@ function Auth() {
                                             })
                                         }}
                                     >
-                                        {permanentCode || 'lorem ipsum'}
+                                        {permanentCode}
                                     </code>
                                 </div>
                             </>
