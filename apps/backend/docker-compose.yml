@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  backend:
+    build: .
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      - NOTION_INTEGRATION_ID=${NOTION_INTEGRATION_ID}
+      - NOTION_INTEGRATION_SECRET=${NOTION_INTEGRATION_SECRET}
+      - PORT=${PORT}
+      - NODE_ENV=${NODE_ENV}
