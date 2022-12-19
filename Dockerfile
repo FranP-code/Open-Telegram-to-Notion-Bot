@@ -1,10 +1,6 @@
-FROM ubuntu:latest
+FROM mhart/alpine-node:14
 
-RUN apt-get upgrade && apt-get update
-RUN apt install -y curl
-RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - &&\
-apt-get install -y nodejs
-RUN npm install --global yarn
+RUN apk add curl
 
 COPY [".", "/usr/src"]
 
