@@ -35,6 +35,7 @@ bot.api.sendMessage(process.env.MY_USER_ID, "working", {parse_mode: "HTML"})
 bot.catch((err, next) => {
   const ctx = err.ctx;
   console.error(`Error while handling update ${ctx.update.update_id}:`);
+  bot.api.sendMessage(process.env.MY_USER_ID, `broke 💀\n\n${err}`, {parse_mode: "HTML"})
   const e = err.error;
   if (e instanceof GrammyError) {
     console.error("Error in request:", e.description);
