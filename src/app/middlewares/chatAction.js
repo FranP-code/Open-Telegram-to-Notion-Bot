@@ -1,12 +1,12 @@
 async function chatAction(ctx, next) {
-    if (!ctx.update.callback_query) {
-        try {
-            await ctx.replyWithChatAction("typing")
-        } catch (err) {
-            console.log(err)
-        }
+  if (!ctx.update.callback_query) {
+    try {
+      await ctx.replyWithChatAction('typing');
+    } catch (err) {
+      console.log(err);
     }
-    next()
+  }
+  next();
 }
 
-module.exports = chatAction
+module.exports = chatAction;

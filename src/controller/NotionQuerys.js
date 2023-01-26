@@ -1,154 +1,152 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-continue */
+/* eslint-disable no-restricted-syntax */
 const { Client } = require('@notionhq/client');
 
 function NotionQuerys(authCode) {
-    
-    const notion = new Client({ auth: authCode });
-    
-    async function checkAuthCode() {
-        
-        try {    
-            const response = await notion.search({
-                page_size: 1,
-                sort: {
-                    direction: 'ascending',
-                    timestamp: 'last_edited_time',
-                }
-            })
+  const notion = new Client({ auth: authCode });
 
-            response.status = "success"
-            return response
+  async function checkAuthCode() {
+    try {
+      const response = await notion.search({
+        page_size: 1,
+        sort: {
+          direction: 'ascending',
+          timestamp: 'last_edited_time',
+        },
+      });
 
-        } catch (error) {
-            return {status: "error"}    
+      response.status = 'success';
+      return response;
+    } catch (error) {
+      return { status: 'error' };
+    }
+  }
+
+  async function returnAllDatabases() {
+    try {
+      const response = await notion.search();
+      const databases = response.results.filter((result) => result.object === 'database');
+      const databasesFormated = [];
+      response.status = 'success';
+      for (const database of databases) {
+        if (database.parent.type === 'workspace') {
+          databasesFormated.push(database);
+          continue;
         }
+        const parentPage = await notion.pages.retrieve({ page_id: database.parent.page_id });
+        databasesFormated.push({
+          ...database,
+          title: database.title.map((titleItem) => ({
+            ...titleItem,
+            text: {
+              ...titleItem.text,
+              content: `${titleItem.text.content} (${parentPage.properties.title.title[0].text.content})`,
+            },
+          })),
+        });
+      }
+      return { ...response, results: databasesFormated };
+    } catch (err) {
+      console.log(err);
+      return {
+        status: 'error',
+      };
     }
+  }
 
-    async function returnAllDatabases() {
-        try {
-            const response = await notion.search()
-            const databases = response.results.filter(result => result.object === 'database')
-            const databasesFormated = []
-            response.status = "success"
-            for (const database of databases) {
-                if (database.parent.type === 'workspace') {
-                    databasesFormated.push(database)
-                    continue;
-                }
-                const parentPage = await notion.pages.retrieve({ page_id: database.parent.page_id });
-                databasesFormated.push({
-                    ...database,
-                    title: database.title.map(titleItem => ({
-                        ...titleItem,
-                        text: {
-                            ...titleItem.text,
-                            content: `${titleItem.text.content} (${parentPage.properties.title.title[0].text.content})`
-                        }
-                    }))
-                })
-            }
-            return {...response, results: databasesFormated}
-        } catch(err) {
-            console.log(err)
-            return {
-                status: "error"
-            }
-        }
+  async function addBlockToDatabase(databaseId, title, properties) {
+    try {
+      const response = await notion.pages.create({
+        parent: {
+          database_id: databaseId,
+        },
+        properties: {
+          title: [
+            {
+              text: {
+                content: title,
+              },
+            },
+          ],
+          ...properties,
+        },
+      });
+
+      response.status = 'success';
+      return response;
+    } catch (err) {
+      console.log(err);
+      return {
+        status: 'error',
+      };
     }
+  }
 
-    async function addBlockToDatabase(databaseId, title, properties) {
-			try {
-				const response = await notion.pages.create({
-					parent: {
-						database_id: databaseId,
-					},
-					properties: {
-						title: [
-							{
-								text: {
-									content: title,
-								},
-							},
-						],
-						...properties,
-					},
-				});
-
-				response.status = "success";
-				return response;
-			} catch (err) {
-				console.log(err);
-				return {
-					status: "error",
-				};
-			}
-		}
-
-    async function getDatabaseData(databaseId) {
-        try {
-            const response = await notion.databases.retrieve({database_id: databaseId})
-            return response
-        } catch (err) {
-            console.log(err)
-            return {status: "error"}
-        }
+  async function getDatabaseData(databaseId) {
+    try {
+      const response = await notion.databases.retrieve({ database_id: databaseId });
+      return response;
+    } catch (err) {
+      console.log(err);
+      return { status: 'error' };
     }
+  }
 
-    async function createPageWithBlock(database_id, config) {
+  async function createPageWithBlock(databaseId, config) {
+    try {
+      let response;
 
-        try {
-            let response
+      switch (config.blockType) {
+        case 'image':
+          response = await notion.pages.create({
+            parent: {
+              database_id: databaseId,
+            },
+            properties: {
+              title: [
+                {
+                  text: {
+                    content: config.title,
+                  },
+                },
+              ],
+              ...config.properties,
+            },
+            children: [
+              {
+                object: 'block',
+                type: 'image',
+                image: {
+                  type: 'external',
+                  external: {
+                    url: config.imageURL,
+                  },
+                },
+              },
+            ],
+          });
 
-            switch (config.blockType) {
-                case "image":
-                    response = await notion.pages.create({
-											parent: {
-												database_id,
-											},
-											properties: {
-												title: [
-													{
-														text: {
-															content: config.title,
-														},
-													},
-												],
-												...config.properties,
-											},
-											children: [
-												{
-													object: "block",
-													type: "image",
-													image: {
-														type: "external",
-														external: {
-															url: config.imageURL,
-														},
-													},
-												},
-											],
-										});
+          response.databaseData = await getDatabaseData(databaseId);
+          break;
 
-                    response.databaseData = await getDatabaseData(database_id)
-                    break;
-            
-                default:
-                    return {status: "error"}
-                    break;
-            }
-            return response
-        } catch (err) {
-            console.log(err)
-            return {status: "error"}
-        }
+        default:
+          return { status: 'error' };
+      }
+      return response;
+    } catch (err) {
+      console.log(err);
+      return { status: 'error' };
     }
+  }
 
-    return {
-        checkAuthCode,
-        returnAllDatabases,
-        addBlockToDatabase,
-        getDatabaseData,
-        createPageWithBlock
-    }
+  return {
+    checkAuthCode,
+    returnAllDatabases,
+    addBlockToDatabase,
+    getDatabaseData,
+    createPageWithBlock,
+  };
 }
 
-module.exports = NotionQuerys
+module.exports = NotionQuerys;

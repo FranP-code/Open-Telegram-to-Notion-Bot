@@ -1,31 +1,30 @@
-const DatabaseQuerys = require("../../controller/DatabaseQuerys")
-const reply = require("../../scripts/reply")
+const DatabaseQuerys = require('../../controller/DatabaseQuerys');
+const reply = require('../../scripts/reply');
 
 async function authCodeHandler(ctx, next) {
-    if (ctx.session.waitingForAuthCode) {
+  if (ctx.session.waitingForAuthCode) {
+    ctx.session.waitingForAuthCode = false;
 
-        ctx.session.waitingForAuthCode = false
+    const response = await DatabaseQuerys().uploadApiKey(ctx.from.id, ctx.message.text);
 
-        const response = await DatabaseQuerys().uploadApiKey(ctx.from.id, ctx.message.text)
+    let message;
 
-        let message
-        
-        if (response.status === "success"){
-            message = "Auth code registered 👍\n\nSend a message to <strong>add it to the database you select</strong>"
-        }
-
-        if (response.status === "error") {
-            if (response.message === "Auth key not valid") {
-                message = "Auth code not valid, type /auth again"
-            } else {
-                message = "Unknow error, please try again later"
-            }
-        }
-
-        reply(ctx, message)
-    } else {
-        await next()
+    if (response.status === 'success') {
+      message = 'Auth code registered 👍\n\nSend a message to <strong>add it to the database you select</strong>';
     }
+
+    if (response.status === 'error') {
+      if (response.message === 'Auth key not valid') {
+        message = 'Auth code not valid, type /auth again';
+      } else {
+        message = 'Unknow error, please try again later';
+      }
+    }
+
+    reply(ctx, message);
+  } else {
+    await next();
+  }
 }
 
-module.exports = authCodeHandler
+module.exports = authCodeHandler;

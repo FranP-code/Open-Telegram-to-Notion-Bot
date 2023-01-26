@@ -1,264 +1,297 @@
-const AppController = require("../../controller/AppController")
+const AppController = require('../../controller/AppController');
 
-const extractSubstring = require("../../scripts/extractSubstring")
-const deleteMessage = require("../../scripts/deleteMessage")
-const reportError = require("../../scripts/reportError")
-const reply = require("../../scripts/reply")
+const extractSubstring = require('../../scripts/extractSubstring');
+const deleteMessage = require('../../scripts/deleteMessage');
+const reportError = require('../../scripts/reportError');
+const reply = require('../../scripts/reply');
 
 async function onCallbackQuery(ctx) {
+  const userID = ctx.from.id;
 
-    const userID = ctx.from.id
+  const prefix = ctx.update.callback_query.data.substring(0, 3);
+  /**
+  * * "db_" = database selection
+  * * "pr_" = propierty selection
+  * * "vl_" = value selection
+  */
 
-    const prefix = ctx.update.callback_query.data.substring(0, 3)
-    /**
-     * * "db_" = database selection
-     * * "pr_" = propierty selection
-     * * "vl_" = value selection
-    */
+  switch (prefix) {
+    case 'db_': {
+      await AppController.t_response(ctx).properties(userID);
 
-    switch (prefix) {
-        case "db_": {
-            await AppController.t_response(ctx).properties(userID);
-            
-            //Delete the previous message
-            deleteMessage(ctx, ctx.update.callback_query.message.message_id)
-            
-            break;
+      // Delete the previous message
+      deleteMessage(ctx, ctx.update.callback_query.message.message_id);
+
+      break;
+    }
+
+    case 'pr_': {
+      const index = extractSubstring(
+        ctx.update.callback_query.data,
+        'in_',
+        false,
+      );
+
+      // Check if cancel operation button is pressed
+      if (
+        extractSubstring(ctx.update.callback_query.data, 'pr_', 'in_') === 'co_'
+      ) {
+        reply(ctx, 'Operation canceled', { parse_mode: 'HTML' });
+        ctx.session.dataForAdd[index] = null;
+        // Delete the previous message
+        deleteMessage(ctx, ctx.update.callback_query.message.message_id);
+        return;
+      }
+
+      // Check if send button is pressed
+      if (
+        extractSubstring(ctx.update.callback_query.data, 'pr_', 'in_') === 'sd_'
+      ) {
+        // Get data
+        const data = ctx.session.dataForAdd[index];
+
+        if (!data) {
+          reportError(ctx);
+          return;
         }
-        
-        case "pr_": {
-            const index = extractSubstring(ctx.update.callback_query.data, "in_", false)
 
-            //Check if cancel operation button is pressed
-            if (extractSubstring(ctx.update.callback_query.data, "pr_", "in_") === "co_") {
-                reply(ctx, "Operation canceled", {parse_mode: "HTML"})
-                ctx.session.dataForAdd[index] = null
-                //Delete the previous message
-                deleteMessage(ctx, ctx.update.callback_query.message.message_id)
-                return
+        let response;
+
+        if (data === undefined) {
+          reportError(ctx);
+          return;
+        }
+
+        const message = {};
+
+        switch (data.type) {
+          case 'text': {
+            // Get what text want the user add
+            const text = data.data.title;
+
+            response = await AppController.notion.addMessageToDatabase(
+              userID,
+              data.databaseID,
+              data,
+            );
+
+            if (response.status !== 'error') {
+              message.text = `<strong>${
+                text.length > 20 ? `${text}\n\n</strong>` : `${text}</strong> `
+              }added to <strong>${response.databaseTitle}</strong> database 👍`;
+              message.data = { parse_mode: 'HTML' };
             }
 
-            //Check if send button is pressed
-            if (extractSubstring(ctx.update.callback_query.data, "pr_", "in_") === "sd_") {
+            break;
+          }
 
-                //Get data
-                const data = ctx.session.dataForAdd[index]
+          case 'image':
+            // Get what image want the user add
+            // eslint-disable-next-line no-case-declarations
+            const image = data.data;
+            image.title = image.title ? image.title : image.file_path;
 
-                if (!data) {
-                    reportError(ctx)
-                    return
-                }
-                
-                let response
+            response = await AppController.notion.addImageToDatabase(
+              userID,
+              data.databaseID,
+              `https://api.telegram.org/file/bot${process.env.NODE_ENV === 'production' ? process.env.BOT_TOKEN_PROD : process.env.BOT_TOKEN_DEV}/${image.file_path}`,
+              image.title,
+              data.propertiesValues,
+            );
 
-                if (data === undefined) {
-                    reportError(ctx)
-                    return
-                }
-
-                const message = {}
-
-                switch (data.type) {
-                    case "text": {
-                        //Get what text want the user add
-                        const text = data.data.title
-                        
-                        response = await AppController.notion.addMessageToDatabase(userID, data.databaseID, data)
-                        
-                        if (response.status !== "error") {
-                            message.text = `<strong>${text.length > 20 ? text + "\n\n</strong>" : text + "</strong> "}added to <strong>${response.databaseTitle}</strong> database 👍`
-                            message.data = {parse_mode: "HTML"}
-                        }
-
-                        break;
-                    }
-
-                    case "image":
-                        //Get what image want the user add
-                        const image = data.data
-                        image.title = image.title ? image.title : image.file_path
-
-                        response =
-													await AppController.notion.addImageToDatabase(
-														userID,
-														data.databaseID,
-														`https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${image.file_path}`,
-														image.title,
-														data.propertiesValues
-													);
-
-                        if (response.status !== "error") {
-                            message.text = `<strong>${image.title.length > 20 ? image.title + "\n\n</strong>" : image.title + "</strong> "}added to <strong>${response.databaseTitle}</strong> database 👍`
-                            message.data = {parse_mode: "HTML"}
-                        }
-                            
-                        break;
-                
-                    default:
-                        reportError(ctx)
-                        break;
-                }
-
-                reply(ctx, message.text, message.data)
-
-                // Change this data on array for null
-                ctx.session.dataForAdd[index] = null
-
-                //Report in error case
-                if (response.status === "error") {
-                    deleteMessage(ctx, ctx.update.callback_query.message.message_id)
-                    reportError(ctx)
-                    return
-                }
-
-                //Delete DB selector
-                deleteMessage(ctx, ctx.update.callback_query.message.message_id)
-
-                return
+            if (response.status !== 'error') {
+              message.text = `<strong>${
+                image.title.length > 20
+                  ? `${image.title}\n\n</strong>`
+                  : `${image.title}</strong> `
+              }added to <strong>${response.databaseTitle}</strong> database 👍`;
+              message.data = { parse_mode: 'HTML' };
             }
 
-            await AppController.t_response(ctx).values()
+            break;
 
-            //Delete the previous message
-            deleteMessage(ctx, ctx.update.callback_query.message.message_id)
-
+          default:
+            reportError(ctx);
             break;
         }
 
-        case "vl_": {
-            //Get data index
-            const index = parseInt(extractSubstring(ctx.update.callback_query.data, "pi_", ""))
- 
-            //If done or cancel operation button pressed
-            if (extractSubstring(ctx.update.callback_query.data, "vl_", "pi_") === "dn_") {
+        reply(ctx, message.text, message.data);
 
-                //Set false in the case that the app was waiting for a value
-                ctx.session.waitingForPropiertyValue = false
+        // Change this data on array for null
+        ctx.session.dataForAdd[index] = null;
 
-                //Delete the previous message
-                await deleteMessage(ctx, ctx.update.callback_query.message.message_id)
+        // Report in error case
+        if (response.status === 'error') {
+          deleteMessage(ctx, ctx.update.callback_query.message.message_id);
+          reportError(ctx);
+          return;
+        }
 
-                AppController.t_response(ctx).properties(
-									userID,
-									ctx.session.dataForAdd[index].listOfpropertiesQuery
-								);
-                return
+        // Delete DB selector
+        deleteMessage(ctx, ctx.update.callback_query.message.message_id);
+
+        return;
+      }
+
+      await AppController.t_response(ctx).values();
+
+      // Delete the previous message
+      deleteMessage(ctx, ctx.update.callback_query.message.message_id);
+
+      break;
+    }
+
+    case 'vl_': {
+      // Get data index
+      const index = parseInt(
+        extractSubstring(ctx.update.callback_query.data, 'pi_', ''),
+        10,
+      );
+
+      // If done or cancel operation button pressed
+      if (
+        extractSubstring(ctx.update.callback_query.data, 'vl_', 'pi_') === 'dn_'
+      ) {
+        // Set false in the case that the app was waiting for a value
+        ctx.session.waitingForPropiertyValue = false;
+
+        // Delete the previous message
+        await deleteMessage(ctx, ctx.update.callback_query.message.message_id);
+
+        AppController.t_response(ctx).properties(
+          userID,
+          ctx.session.dataForAdd[index].listOfpropertiesQuery,
+        );
+        return;
+      }
+
+      // Get propierty id
+      const propiertyID = extractSubstring(
+        ctx.update.callback_query.data,
+        'pr_',
+        'pi_',
+      );
+
+      // Get propierty data
+      const propierty = Object.values(
+        ctx.session.dataForAdd[index].properties,
+      ).find((prop) => prop.id === propiertyID);
+
+      // Get optionID
+      const optionID = extractSubstring(
+        ctx.update.callback_query.data,
+        'vl_',
+        'pr_',
+      );
+
+      // If not exists the properties values propierty, create it
+      if (!ctx.session.dataForAdd[index].propertiesValues) {
+        ctx.session.dataForAdd[index].propertiesValues = {};
+      }
+
+      const propiertyValue = ctx.session.dataForAdd[index].propertiesValues[propiertyID];
+
+      const message = {};
+
+      switch (propierty.type) {
+        case 'multi_select': {
+          // Get data
+          const data = propierty.multi_select.options.find(
+            (option) => option.id === optionID,
+          );
+
+          if (propiertyValue) {
+            // If the array don't include the propierty id, add it
+            if (
+              !Object.keys(
+                ctx.session.dataForAdd[index].propertiesValues[propiertyID],
+              ).includes(data)
+            ) {
+              ctx.session.dataForAdd[index].propertiesValues[propiertyID] = [
+                ...propiertyValue,
+                data,
+              ];
             }
+          } else {
+            ctx.session.dataForAdd[index].propertiesValues[propiertyID] = [
+              data,
+            ];
+          }
 
-            //Get propierty id
-            const propiertyID = extractSubstring(ctx.update.callback_query.data, "pr_", "pi_")
+          message.text = `<strong>${data.name}</strong> value added`;
+          message.data = { parse_mode: 'HTML' };
 
-            //Get propierty data
-            const propierty = Object.values(
-							ctx.session.dataForAdd[index].properties
-						).find((prop) => {
-							return prop.id === propiertyID;
-						});
+          break;
+        }
 
-            //Get optionID
-            const optionID = extractSubstring(ctx.update.callback_query.data, "vl_", "pr_")
+        case 'checkbox': {
+          // Get the boolean of the optionID
+          const propertyData = JSON.parse(optionID);
 
-            //If not exists the properties values propierty, create it
-            if (!ctx.session.dataForAdd[index].propertiesValues) {
-                ctx.session.dataForAdd[index].propertiesValues = {}
-            }
+          // Add it to the values
+          ctx.session.dataForAdd[index].propertiesValues[propiertyID] = propertyData;
 
-            const propiertyValue =
-							ctx.session.dataForAdd[index].propertiesValues[propiertyID];
+          // Reply
+          message.text = `<strong>${propierty.name}</strong> is <strong>${
+            propertyData ? 'checked' : 'unchecked'
+          }</strong>`;
+          message.data = { parse_mode: 'HTML' };
 
-            const message = {}
+          // Delete the checked selector
+          await deleteMessage(
+            ctx,
+            ctx.update.callback_query.message.message_id,
+          );
 
-            switch (propierty.type) {
-                case "multi_select": {
-                    //Get data
-                    const data = propierty.multi_select.options.find(option => {
-                        return option.id === optionID
-                    })
+          // Reply with properties list
+          AppController.t_response(ctx).properties(
+            userID,
+            ctx.session.dataForAdd[index].listOfpropertiesQuery,
+          );
 
-                    if (propiertyValue) {
-                        // If the array don't include the propierty id, add it
-                        if (
-													!Object.keys(
-														ctx.session.dataForAdd[index].propertiesValues[
-															propiertyID
-														]
-													).includes(data)
-												) {
-													ctx.session.dataForAdd[index].propertiesValues[
-														propiertyID
-													] = [...propiertyValue, data];
-												}
-                    } else {
-                        ctx.session.dataForAdd[index].propertiesValues[
-													propiertyID
-												] = [data];
-                    }
+          break;
+        }
 
-                    message.text = `<strong>${data.name}</strong> value added`
-                    message.data = {parse_mode: "HTML"}
-                    
-                    break;
-                }
- 
-                case "checkbox": {
-                    // Get the boolean of the optionID
-                    const p_data = JSON.parse(optionID)
-                    
-                    //Add it to the values
-                    ctx.session.dataForAdd[index].propertiesValues[
-											propiertyID
-										] = p_data;
-                    
-                    //Reply
-                    message.text = `<strong>${propierty.name}</strong> is <strong>${p_data ? "checked" : "unchecked"}</strong>`
-                    message.data = {parse_mode: "HTML"}
+        case 'select': {
+          // Get data
+          const data = propierty.select.options.find(
+            (option) => option.id === optionID,
+          );
 
-                    //Delete the checked selector
-                    await deleteMessage(ctx, ctx.update.callback_query.message.message_id)
+          ctx.session.dataForAdd[index].propertiesValues[propiertyID] = data;
 
-                    //Reply with properties list
-                    AppController.t_response(ctx).properties(userID, ctx.session.dataForAdd[index].listOfpropertiesQuery)
-                 
-                    break; 
-                }
+          // Reply
+          message.text = `<strong>${data.name}</strong> value added`;
+          message.data = { parse_mode: 'HTML' };
 
-                case "select": { 
-                    //Get data
-                    const data = propierty.select.options.find(option => {
-                        return option.id === optionID
-                    })
-  
-                    ctx.session.dataForAdd[index].propertiesValues[
-											propiertyID
-										] = data;
+          // Delete the checked selector
+          await deleteMessage(
+            ctx,
+            ctx.update.callback_query.message.message_id,
+          );
 
-                    //Reply
-                    message.text = `<strong>${data.name}</strong> value added`
-                    message.data = {parse_mode: "HTML"}
-
-                    //Delete the checked selector
-                    await deleteMessage(ctx, ctx.update.callback_query.message.message_id)
-
-                    //Reply with properties list
-                    AppController.t_response(ctx).properties(userID, ctx.session.dataForAdd[index].listOfpropertiesQuery)
-                    break;
-            
-                }
-
-                default:
-                    reportError(ctx)
-                    break;
-            }
-
-            reply(ctx, message.text, message.data)
-
-            break;
+          // Reply with properties list
+          AppController.t_response(ctx).properties(
+            userID,
+            ctx.session.dataForAdd[index].listOfpropertiesQuery,
+          );
+          break;
         }
 
         default:
-            reportError(ctx)
-            break;
+          reportError(ctx);
+          break;
+      }
+
+      reply(ctx, message.text, message.data);
+
+      break;
     }
+
+    default:
+      reportError(ctx);
+      break;
+  }
 }
 
-module.exports = onCallbackQuery
+module.exports = onCallbackQuery;
