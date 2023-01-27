@@ -20,7 +20,7 @@ async function announcementHandler(ctx, next) {
 
     let users;
 
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'develop') {
       users = [
         await DatabaseQuerys().getUser(process.env.TESTING_USER_ID),
         await DatabaseQuerys().getUser(process.env.MY_USER_ID),
