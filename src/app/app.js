@@ -28,6 +28,7 @@ const onText = require('./events/onText');
 const onCallbackQuery = require('./events/onCallbackQuery');
 const onPhoto = require('./events/onPhoto');
 const reply = require('../scripts/reply');
+const defaultDatabase = require('./commands/defaultDatabase');
 
 const bot = new Bot(
   process.env.OLD_BOT === 'true' ? process.env.BOT_TOKEN_OLD
@@ -108,6 +109,8 @@ bot.command('feedback', feedback);
 
 // Clear command
 bot.command('clear', clear);
+
+bot.command('defaultdatabase', defaultDatabase);
 
 /*
  * Little note: all the commands are before the events of the bot

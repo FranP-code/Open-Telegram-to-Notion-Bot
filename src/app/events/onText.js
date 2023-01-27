@@ -2,6 +2,7 @@
 const moment = require('moment');
 
 const AppController = require('../../controller/AppController');
+const DatabaseQuerys = require('../../controller/DatabaseQuerys');
 const deleteMessage = require('../../scripts/deleteMessage');
 const reply = require('../../scripts/reply');
 
@@ -125,7 +126,13 @@ async function onText(ctx) {
     return;
   }
 
-  // Get databases
+  const defaultDatabase = await DatabaseQuerys().getDefaultDatabase(ctx?.from?.id);
+  if (defaultDatabase?.defaultDatabaseId) {
+    const { defaultDatabaseId, defaultDatabaseName } = defaultDatabase;
+    ctx.session.dataForAdd.push({ type: 'text', data: { title: ctx.message.text.trim() } });
+    await AppController.t_response(ctx).properties(ctx?.from?.id, `db_${defaultDatabaseId}dt_textin_${ctx.session.dataForAdd.length - 1}`, defaultDatabaseName);
+    return;
+  }
   const databases = await AppController.notion.getDatabases(ctx?.from?.id);
 
   if (databases.status === 'error') {
@@ -150,7 +157,7 @@ async function onText(ctx) {
   const botReply = text.length > 20 ? `\n\n${text}` : text;
 
   // Generate Keyboard from the databases
-  const keyboard = await AppController.generateKeyboard.databases(databases.results, null, 'text', ctx.session.dataForAdd);
+  const keyboard = AppController.generateKeyboard.databases(databases.results, null, 'text', ctx.session.dataForAdd);
 
   try {
     await reply(ctx, `Select the <strong>database</strong> to save <strong>${botReply}</strong>`, { ...keyboard, parse_mode: 'HTML' });

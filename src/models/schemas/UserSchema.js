@@ -9,6 +9,12 @@ const UserSchema = new Schema({
     type: 'object',
     required: true,
   },
+  defaultDatabaseName: {
+    type: 'string',
+  },
+  defaultDatabaseId: {
+    type: 'string',
+  },
 });
 
 module.exports = model('Users', UserSchema);

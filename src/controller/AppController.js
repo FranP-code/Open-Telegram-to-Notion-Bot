@@ -7,12 +7,12 @@ const reportError = require('../scripts/reportError');
 const reply = require('../scripts/reply');
 
 const AppController = {
-
   t_response(ctx) {
-    async function properties(userID, callbackQuery) {
+    async function properties(userID, callbackQuery, databaseName) {
+      const config = callbackQuery || ctx.update.callback_query.data;
       const index = parseInt(
         extractSubstring(
-          callbackQuery || ctx.update.callback_query.data,
+          config,
           'in_',
           false,
         ),
@@ -22,15 +22,6 @@ const AppController = {
       if (!ctx.session.dataForAdd[index]) {
         reportError(ctx);
         return;
-      }
-
-      // Config initialization
-      let config;
-
-      if (callbackQuery) {
-        config = callbackQuery;
-      } else {
-        config = ctx.update.callback_query.data;
       }
 
       ctx.session.dataForAdd[index].listOfpropertiesQuery = config;
@@ -70,10 +61,11 @@ const AppController = {
       const keyboard = await AppController.generateKeyboard.properties(
         Object.values(databaseProperties),
         index,
+        !!databaseName,
       );
       await reply(
         ctx,
-        'Select the <strong>properties</strong> for define',
+        `Select the <strong>properties</strong> for define${databaseName ? `\n\nUsing <strong>${databaseName}</strong> database` : ''}`,
         { parse_mode: 'HTML', ...keyboard },
       );
     }
@@ -301,13 +293,13 @@ const AppController = {
   generateKeyboard: {
     databases(databases, cancelOperationText, dataType, sessionStorage) {
       /**
-             * * db_ = database_prefix
-             * * dt_ = dataType
-             * * in_ = indexOnSession
-             * * co_ = cancel_operation
-             *
-             * Thank you Telegram and your's 64 bit limit https://github.com/yagop/node-telegram-bot-api/issues/706
-             */
+       * * db_ = database_prefix
+       * * dt_ = dataType
+       * * in_ = indexOnSession
+       * * co_ = cancel_operation
+       *
+       * Thank you Telegram and your's 64 bit limit https://github.com/yagop/node-telegram-bot-api/issues/706
+       */
       return {
         reply_markup: {
           inline_keyboard: [
@@ -340,12 +332,13 @@ const AppController = {
       };
     },
 
-    properties(properties, dataIndex) {
+    properties(properties, dataIndex, hasDefaultDatabase) {
       /**
       * * pr_ = propierty prefix
       * * in_ = data index
       * * sd_ = send
       * * co_ = cancel operation
+      * * rd_ = remove default database
       */
 
       // Filter the properties for only keep the valid ones
@@ -362,34 +355,41 @@ const AppController = {
         'files',
         'date',
       ];
-
+      const inlineKeyboard = [
+        ...properties.filter((prop) => validTypes.includes(prop.type)).map((prop) => [
+          {
+            text: prop.name,
+            callback_data: `pr_${prop.id}in_${dataIndex}`,
+          },
+        ]),
+        [
+          {
+            text: '✅',
+            callback_data: 'pr_' + 'sd_' + `in_${dataIndex}`,
+          },
+        ],
+        [
+          {
+            text: '🚫',
+            callback_data: 'pr_' + 'co_' + `in_${dataIndex}`,
+          },
+        ],
+      ];
+      if (hasDefaultDatabase) {
+        inlineKeyboard.push([
+          {
+            text: '🗑️ Remove default database',
+            callback_data: 'pr_' + 'rd_' + `in_${dataIndex}`,
+          },
+        ]);
+      }
       return {
         reply_markup: {
-          inline_keyboard: [
-            ...properties.filter((prop) => validTypes.includes(prop.type)).map((prop) => [
-              {
-                text: prop.name,
-                callback_data: `pr_${prop.id}in_${dataIndex}`,
-              },
-            ]),
-            [
-              {
-                text: '✅',
-                callback_data: 'pr_' + 'sd_' + `in_${dataIndex}`,
-              },
-            ],
-            [
-              {
-                text: '🚫',
-                callback_data: 'pr_' + 'co_' + `in_${dataIndex}`,
-              },
-            ],
-          ],
+          inline_keyboard: inlineKeyboard,
         },
       };
     },
   },
-
   notion: {
     async getDatabases(userID) {
       const userRegistered = await DatabaseQuerys().checkUserRegistered(userID);

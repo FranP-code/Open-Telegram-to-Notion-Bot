@@ -5,6 +5,9 @@ const addUser = require('../models/querys/addUser');
 const searchUser = require('../models/querys/searchUser');
 const searchAllUsers = require('../models/querys/searchAllUsers');
 const uploadImage = require('../models/querys/uploadImage');
+const addDefaultDatabaseQuery = require('../models/querys/addDefaultDatabaseQuery');
+const getDefaultDatabaseQuery = require('../models/querys/getDefaultDatabaseQuery');
+const removeDefaultDatabaseQuery = require('../models/querys/removeDefaultDatabaseQuery');
 
 function DatabaseQuerys() {
   async function uploadApiKey(userId, apiKey) {
@@ -67,13 +70,53 @@ function DatabaseQuerys() {
     }
   }
 
+  async function addDefaultDatabase(databaseId, userId) {
+    try {
+      const notionAuthKey = await getNotionAuthKey(userId);
+      const data = await addDefaultDatabaseQuery(databaseId, userId, notionAuthKey.data);
+      return {
+        status: 'success',
+        data,
+      };
+    } catch (err) {
+      console.log(err);
+      return { status: 'error' };
+    }
+  }
+
+  async function removeDefaultDatabase(userId) {
+    try {
+      const data = await removeDefaultDatabaseQuery(userId);
+      return {
+        data,
+        status: 'success',
+      };
+    } catch (err) {
+      console.log(err);
+      return { status: 'error' };
+    }
+  }
+
+  async function getDefaultDatabase(userId) {
+    try {
+      const data = await getDefaultDatabaseQuery(userId);
+      return data;
+    } catch (error) {
+      console.log(error);
+      return { status: 'error' };
+    }
+  }
+
   return {
-    uploadApiKey,
+    addDefaultDatabase,
     checkUserRegistered,
+    getAllUsers,
+    getDefaultDatabase,
     getNotionAuthKey,
     getUser,
-    getAllUsers,
+    removeDefaultDatabase,
     uploadAndGetImageURL,
+    uploadApiKey,
   };
 }
 

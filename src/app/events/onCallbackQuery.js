@@ -4,6 +4,7 @@ const extractSubstring = require('../../scripts/extractSubstring');
 const deleteMessage = require('../../scripts/deleteMessage');
 const reportError = require('../../scripts/reportError');
 const reply = require('../../scripts/reply');
+const DatabaseQuerys = require('../../controller/DatabaseQuerys');
 
 async function onCallbackQuery(ctx) {
   const userID = ctx.from.id;
@@ -14,6 +15,15 @@ async function onCallbackQuery(ctx) {
   * * "pr_" = propierty selection
   * * "vl_" = value selection
   */
+
+  if (ctx.session.waitingForDefaultDatabaseSelection) {
+    const databaseId = extractSubstring(ctx.update.callback_query.data, 'db_', 'dt_');
+    const response = await DatabaseQuerys().addDefaultDatabase(databaseId, ctx?.from?.id);
+    reply(ctx, `Added the database <strong>${response.data.defaultDatabaseName}</strong> as default`);
+    deleteMessage(ctx, ctx.update.callback_query.message.message_id);
+    ctx.session.waitingForDefaultDatabaseSelection = false;
+    return;
+  }
 
   switch (prefix) {
     case 'db_': {
@@ -33,9 +43,8 @@ async function onCallbackQuery(ctx) {
       );
 
       // Check if cancel operation button is pressed
-      if (
-        extractSubstring(ctx.update.callback_query.data, 'pr_', 'in_') === 'co_'
-      ) {
+      const operation = extractSubstring(ctx.update.callback_query.data, 'pr_', 'in_');
+      if (operation === 'co_') {
         reply(ctx, 'Operation canceled', { parse_mode: 'HTML' });
         ctx.session.dataForAdd[index] = null;
         // Delete the previous message
@@ -44,9 +53,7 @@ async function onCallbackQuery(ctx) {
       }
 
       // Check if send button is pressed
-      if (
-        extractSubstring(ctx.update.callback_query.data, 'pr_', 'in_') === 'sd_'
-      ) {
+      if (operation === 'sd_') {
         // Get data
         const data = ctx.session.dataForAdd[index];
 
@@ -130,6 +137,28 @@ async function onCallbackQuery(ctx) {
         // Delete DB selector
         deleteMessage(ctx, ctx.update.callback_query.message.message_id);
 
+        return;
+      }
+
+      if (operation === 'rd_') {
+        const response = await DatabaseQuerys().removeDefaultDatabase(ctx?.from?.id);
+        if (response.status === 'error') {
+          deleteMessage(ctx, ctx.update.callback_query.message.message_id);
+          reportError(ctx);
+          return;
+        }
+        const databases = await AppController.notion.getDatabases(ctx?.from?.id);
+        const text = ctx.session.dataForAdd[index].data.title;
+        const botReply = text.length > 20 ? `\n\n${text}` : text;
+        const keyboard = AppController.generateKeyboard.databases(databases.results, null, 'text', ctx.session.dataForAdd);
+
+        deleteMessage(ctx, ctx.update.callback_query.message.message_id);
+        try {
+          await reply(ctx, `Removed <strong>${response.data.defaultDatabaseName}</strong> as default database`);
+          await reply(ctx, `Select the <strong>database</strong> to save <strong>${botReply}</strong>`, { ...keyboard, parse_mode: 'HTML' });
+        } catch (err) {
+          console.log(err);
+        }
         return;
       }
 
