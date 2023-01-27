@@ -140,13 +140,7 @@ async function onCallbackQuery(ctx) {
         return;
       }
 
-      if (operation === 'rd_') {
-        const response = await DatabaseQuerys().removeDefaultDatabase(ctx?.from?.id);
-        if (response.status === 'error') {
-          deleteMessage(ctx, ctx.update.callback_query.message.message_id);
-          reportError(ctx);
-          return;
-        }
+      if (operation === 'rd_' || operation === 'ds_') {
         const databases = await AppController.notion.getDatabases(ctx?.from?.id);
         const text = ctx.session.dataForAdd[index].data.title;
         const botReply = text.length > 20 ? `\n\n${text}` : text;
@@ -154,7 +148,15 @@ async function onCallbackQuery(ctx) {
 
         deleteMessage(ctx, ctx.update.callback_query.message.message_id);
         try {
-          await reply(ctx, `Removed <strong>${response.data.defaultDatabaseName}</strong> as default database`);
+          if (operation === 'rd_') {
+            const response = await DatabaseQuerys().removeDefaultDatabase(ctx?.from?.id);
+            if (response.status === 'error') {
+              deleteMessage(ctx, ctx.update.callback_query.message.message_id);
+              reportError(ctx);
+              return;
+            }
+            await reply(ctx, `Removed <strong>${response.data.defaultDatabaseName}</strong> as default database`);
+          }
           await reply(ctx, `Select the <strong>database</strong> to save <strong>${botReply}</strong>`, { ...keyboard, parse_mode: 'HTML' });
         } catch (err) {
           console.log(err);

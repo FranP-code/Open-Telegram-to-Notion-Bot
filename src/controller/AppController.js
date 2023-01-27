@@ -339,6 +339,7 @@ const AppController = {
       * * sd_ = send
       * * co_ = cancel operation
       * * rd_ = remove default database
+      * * ds_ = database selection
       */
 
       // Filter the properties for only keep the valid ones
@@ -377,6 +378,10 @@ const AppController = {
       ];
       if (hasDefaultDatabase) {
         inlineKeyboard.push([
+          {
+            text: '⬅ Back to databases selection',
+            callback_data: 'pr_' + 'ds_' + `in_${dataIndex}`,
+          },
           {
             text: '🗑️ Remove default database',
             callback_data: 'pr_' + 'rd_' + `in_${dataIndex}`,
