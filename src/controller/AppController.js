@@ -70,6 +70,10 @@ const AppController = {
       );
     }
 
+    async function setSort(userID, databaseId) {
+
+    }
+
     async function values() {
       // Get propierty ID
       const propID = extractSubstring(ctx.update.callback_query.data, 'pr_', 'in_');
@@ -287,6 +291,7 @@ const AppController = {
 
     return {
       properties,
+      setSort,
       values,
     };
   },

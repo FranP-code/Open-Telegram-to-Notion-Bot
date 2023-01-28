@@ -8,8 +8,8 @@ const DatabaseQuerys = require('../../controller/DatabaseQuerys');
 
 async function onCallbackQuery(ctx) {
   const userID = ctx.from.id;
-
   const prefix = ctx.update.callback_query.data.substring(0, 3);
+  const databaseId = extractSubstring(ctx.update.callback_query.data, 'db_', 'dt_');
   /**
   * * "db_" = database selection
   * * "pr_" = propierty selection
@@ -17,12 +17,18 @@ async function onCallbackQuery(ctx) {
   */
 
   if (ctx.session.waitingForDefaultDatabaseSelection) {
-    const databaseId = extractSubstring(ctx.update.callback_query.data, 'db_', 'dt_');
     const response = await DatabaseQuerys().addDefaultDatabase(databaseId, ctx?.from?.id);
     reply(ctx, `Added the database <strong>${response.data.defaultDatabaseName}</strong> as default`);
     deleteMessage(ctx, ctx.update.callback_query.message.message_id);
     ctx.session.waitingForDefaultDatabaseSelection = false;
     return;
+  }
+
+  if (ctx.session.waitingForChangeSortDatabaseSelection) {
+    await AppController.t_response(ctx).setSort(userID, databaseId);
+    deleteMessage(ctx, ctx.update.callback_query.message.message_id);
+
+    ctx.session.waitingForChangeSortDatabaseSelection = false;
   }
 
   switch (prefix) {
