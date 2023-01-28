@@ -61,6 +61,7 @@ function initialSesionValues() {
     waitingForAnnouncementMessage: false,
     dataForAdd: [],
     waitingForPropiertyValue: false,
+    waitingForDefaultDatabaseSelection: false,
   };
 }
 
