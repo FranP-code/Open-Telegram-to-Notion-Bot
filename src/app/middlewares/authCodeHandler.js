@@ -10,6 +10,7 @@ async function authCodeHandler(ctx, next) {
     let message;
 
     if (response.status === 'success') {
+      await DatabaseQuerys().removeDefaultDatabase(ctx.from.id);
       message = 'Auth code registered 👍\n\nSend a message to <strong>add it to the database you select</strong>';
     }
 
