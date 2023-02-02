@@ -6,12 +6,15 @@ async function addUser(userId, notionAuthKey) {
   const encryptedNotionAuthKey = encrypt(notionAuthKey);
 
   try {
-    const data = await UserSchema.findOneAndUpdate({ userId }, { userId, notionAuthKey });
+    const data = await UserSchema.findOneAndUpdate(
+      { userId },
+      { userId, notionAuthKey: encryptedNotionAuthKey },
+    );
 
     if (!data) {
       const userSchemaCreate = new UserSchema({
         userId,
-        encryptedNotionAuthKey,
+        notionAuthKey: encryptedNotionAuthKey,
       });
       await userSchemaCreate.save();
     }
