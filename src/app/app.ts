@@ -34,6 +34,7 @@ import start from "./commands/start";
 import onCallbackQuery from "./events/onCallbackQuery";
 import onPhoto from "./events/onPhoto";
 import onText from "./events/onText";
+
 import reportError from "../scripts/reportError";
 import { dbConnection } from "../models/dbConnection";
 

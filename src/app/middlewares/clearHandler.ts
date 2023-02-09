@@ -11,7 +11,7 @@ export default async function clearHandler(
 			ctx.session.dataForAdd = [];
 			reply(ctx, "Cleared the cache 👌");
 		} else {
-			reply(ctx, "Operation canceled. The cache was'n cleaned");
+			reply(ctx, "Operation canceled. The cache wasn't cleaned");
 		}
 		ctx.session.waitingForClearConfirmation = false;
 	} else {
