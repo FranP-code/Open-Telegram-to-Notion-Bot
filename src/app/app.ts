@@ -37,6 +37,8 @@ import onText from "./events/onText";
 
 import reportError from "../scripts/reportError";
 import { dbConnection } from "../models/dbConnection";
+import { errorMessages } from "../utils";
+import { checkAuthCodeCommand } from "./commands/checkAuthCode";
 
 type MyContext = Context & SessionFlavor<SessionData>;
 
@@ -104,6 +106,7 @@ bot.command("roadmap", roadmap);
 bot.command("feedback", feedback);
 bot.command("clear", clear);
 bot.command("defaultdatabase", defaultDatabase);
+bot.command("checkauthcode", checkAuthCodeCommand);
 
 //* ---------------- EVENTS ----------------
 
@@ -115,7 +118,8 @@ const eventFunctionContext = async (
 		await eventFunction(ctx);
 	} catch (error: any) {
 		console.log(error);
-		reportError(ctx);
+		const text = error?.message && errorMessages[error.message];
+		reportError(ctx, text);
 	}
 };
 

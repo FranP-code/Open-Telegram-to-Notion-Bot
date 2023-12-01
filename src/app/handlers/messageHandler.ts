@@ -14,8 +14,8 @@ const messageHandler = async (
 		await getDefaultDatabase(userId)
 	);
 	if (
-		defaultDatabase.defaultDatabaseId &&
-		defaultDatabase.defaultDatabaseName
+		defaultDatabase?.defaultDatabaseId &&
+		defaultDatabase?.defaultDatabaseName
 	) {
 		const { defaultDatabaseId, defaultDatabaseName } = defaultDatabase;
 		ctx.session.dataForAdd.push({
@@ -56,7 +56,7 @@ const messageHandler = async (
 		);
 	} catch (error: any) {
 		console.log(error);
-		await reportError(ctx);
+		reportError(ctx);
 	}
 };
 
