@@ -12,7 +12,7 @@ router.post('/', async (req, res) => {
             const reqData = {
                 code: req.body.code,
                 grant_type: "authorization_code",
-                redirect_uri: "https://open-telegram-to-notion-website.franp.site/auth"
+                redirect_uri: "https://open-telegram-to-notion.vercel.app/auth"
             }
 
             const auth = {
