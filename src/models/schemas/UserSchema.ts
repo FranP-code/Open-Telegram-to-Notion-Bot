@@ -1,32 +1,32 @@
-import { Schema, model, Model } from 'mongoose'
+import { Schema, model, Model } from "mongoose";
 
 type NotionAuthKey = {
-  iv: string,
-  content: string
-}
+  iv: string;
+  content: string;
+};
 
 export interface IUser {
-  userId: number,
-  notionAuthKey: NotionAuthKey,
-  defaultDatabaseName: string,
-  defaultDatabaseId?: string
+  userId: number;
+  notionAuthKey: NotionAuthKey;
+  defaultDatabaseName: string;
+  defaultDatabaseId?: string;
 }
 
 const UserSchema = new Schema<IUser>({
   userId: {
-    type: 'number',
-    required: true
+    type: "number",
+    required: true,
   },
   notionAuthKey: {
     type: Object,
-    required: true
+    required: true,
   },
   defaultDatabaseName: {
-    type: 'string'
+    type: "string",
   },
   defaultDatabaseId: {
-    type: 'string'
-  }
-})
+    type: "string",
+  },
+});
 
-export const UserModel: Model<IUser> = model('Users', UserSchema)
+export const UserModel: Model<IUser> = model("Users", UserSchema);
