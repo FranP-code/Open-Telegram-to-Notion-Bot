@@ -16,10 +16,12 @@
 	"author": "FranP-Code",
 	"license": "ISC",
 	"dependencies": {
+		"@grammyjs/storage-redis": "^2.4.2",
 		"@notionhq/client": "^1.0.4",
 		"axios": "^0.27.2",
 		"dotenv": "^16.0.0",
-		"grammy": "1.7.2",
+		"grammy": "1.30.0",
+		"ioredis": "^5.4.1",
 		"moment": "^2.29.4",
 		"mongoose": "^6.5.2"
 	},

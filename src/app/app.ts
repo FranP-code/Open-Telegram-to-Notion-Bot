@@ -8,6 +8,9 @@ import {
 	Context,
 	SessionFlavor,
 } from "grammy";
+import IORedis from 'ioredis';
+import { RedisAdapter } from "@grammyjs/storage-redis";
+
 import { BotContext, SessionData } from "./types";
 import reply from "../scripts/reply";
 
@@ -42,6 +45,25 @@ import { checkAuthCodeCommand } from "./commands/checkAuthCode";
 
 type MyContext = Context & SessionFlavor<SessionData>;
 
+if (!process.env.REDIS_URL) {
+	throw new Error("Please provide REDIS_URL");
+}
+
+const redis = new IORedis(process.env.REDIS_URL);
+const storage = new RedisAdapter({ instance: redis });
+
+// Setting default session for user
+function initialSesionValues(): SessionData {
+	return {
+		dataForAdd: [],
+		waitingForAnnouncementMessage: false,
+		waitingForAuthCode: false,
+		waitingForClearConfirmation: false,
+		waitingForDefaultDatabaseSelection: false,
+		waitingForPropiertyValue: false,
+	};
+}
+
 const bot = new Bot<MyContext>(
 	<string>(
 		(process.env.OLD_BOT === "true"
@@ -51,6 +73,8 @@ const bot = new Bot<MyContext>(
 			: process.env.BOT_TOKEN_DEV)
 	)
 );
+
+bot.use(session({ initial: initialSesionValues, storage }));
 
 bot.api.sendMessage(<string>process.env.MY_USER_ID, "working", {
 	parse_mode: "HTML",
@@ -73,20 +97,6 @@ bot.catch((err) => {
 });
 
 //* ---------------- MIDDLEWARES ----------------
-
-// Setting default session for user
-function initialSesionValues(): SessionData {
-	return {
-		dataForAdd: [],
-		waitingForAnnouncementMessage: false,
-		waitingForAuthCode: false,
-		waitingForClearConfirmation: false,
-		waitingForDefaultDatabaseSelection: false,
-		waitingForPropiertyValue: false,
-	};
-}
-
-bot.use(session({ initial: initialSesionValues }));
 
 bot.use(developmentMsg);
 bot.use(authCodeHandler);
