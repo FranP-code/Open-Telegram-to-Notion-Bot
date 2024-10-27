@@ -1,6 +1,6 @@
 import { CreatePageResponse } from "@notionhq/client/build/src/api-endpoints";
 import { Context } from "grammy";
-import { File } from "grammy/out/platform.node";
+import { File } from "grammy/types";
 
 export type DataForAddProperty = {
 	id: string;
