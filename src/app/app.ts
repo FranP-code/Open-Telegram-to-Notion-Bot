@@ -99,9 +99,7 @@ bot.catch((err) => {
 //* ---------------- MIDDLEWARES ----------------
 
 bot.use(developmentMsg);
-bot.use(authCodeHandler);
 bot.use(announcementHandler);
-bot.use(clearHandler);
 bot.use(chatAction);
 bot.use(oldBotMessage);
 bot.use(checkSessionsSize); //! Keep at bottom of the middlewares

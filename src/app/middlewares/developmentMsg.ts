@@ -3,12 +3,8 @@ import reply from '../../scripts/reply'
 import { BotContext } from "../types"
 
 export default async function developmentMsg (ctx: BotContext, next: NextFunction) {
-  if (process.env.NODE_ENV !== 'development') {
-    await next()
-    return
-  }
-
   if (
+    process.env.NODE_ENV === 'development' &&
     ctx.from?.id !== parseInt(<string>process.env.MY_USER_ID, 10) &&
     ctx.from?.id !== parseInt(<string>process.env.TESTING_USER_ID, 10)
   ) {
