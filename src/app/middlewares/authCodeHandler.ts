@@ -10,7 +10,9 @@ export default async function authCodeHandler(
 	ctx: BotContext,
 	next: NextFunction
 ) {
+	console.log('enter');
 	if (ctx.session.waitingForAuthCode) {
+		console.log('enter2');
 		ctx.session.waitingForAuthCode = false;
 		let responseMessage;
 		try {
