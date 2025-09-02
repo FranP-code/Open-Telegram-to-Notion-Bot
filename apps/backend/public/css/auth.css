@@ -1,0 +1,29 @@
+.request-success {
+
+    display: flex;
+    align-items: center;
+    
+    background-color: #ffebcd;
+    
+    padding: 3vh 0px 3vh 2vw;
+    
+    user-select: all;
+    -webkit-user-select: all;
+}
+
+.request-success code {
+    overflow-wrap: anywhere;
+}
+
+.request-success img {
+
+    width: 50px;
+
+    margin-right: 3vw;
+
+    user-select: none;
+}
+
+.request-error {
+    color: rgb(143, 0, 0)
+}
