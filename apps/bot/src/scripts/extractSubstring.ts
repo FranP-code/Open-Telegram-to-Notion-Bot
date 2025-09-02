@@ -1,4 +1,8 @@
-export default function extractSubstring(str: string, start: string, end: string|false) {
+export default function extractSubstring(
+  str: string,
+  start: string,
+  end: string | false,
+) {
   const position = str.indexOf(start) + start.length;
 
   if (!end) {

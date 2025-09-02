@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
 /* eslint-disable no-nested-ternary */
 import {
-	Bot,
-	session,
-	GrammyError,
-	HttpError,
-	Context,
-	SessionFlavor,
+  Bot,
+  session,
+  GrammyError,
+  HttpError,
+  Context,
+  SessionFlavor,
 } from "grammy";
 import { BotContext, SessionData } from "./types";
 import reply from "../scripts/reply";
@@ -43,47 +43,47 @@ import { checkAuthCodeCommand } from "./commands/checkAuthCode";
 type MyContext = Context & SessionFlavor<SessionData>;
 
 const bot = new Bot<MyContext>(
-	<string>(
-		(process.env.OLD_BOT === "true"
-			? process.env.BOT_TOKEN_OLD
-			: process.env.NODE_ENV === "production"
-			? process.env.BOT_TOKEN_PROD
-			: process.env.BOT_TOKEN_DEV)
-	)
+  <string>(
+    (process.env.OLD_BOT === "true"
+      ? process.env.BOT_TOKEN_OLD
+      : process.env.NODE_ENV === "production"
+        ? process.env.BOT_TOKEN_PROD
+        : process.env.BOT_TOKEN_DEV)
+  ),
 );
 
 bot.api.sendMessage(<string>process.env.MY_USER_ID, "working", {
-	parse_mode: "HTML",
+  parse_mode: "HTML",
 });
 
 bot.catch((err) => {
-	const { ctx } = err;
-	console.log(`Error while handling update ${ctx.update.update_id}:`);
-	bot.api.sendMessage(<string>process.env.MY_USER_ID, `broke 💀\n\n${err}`, {
-		parse_mode: "HTML",
-	});
-	const e = err.error;
-	if (e instanceof GrammyError) {
-		console.log("Error in request:", e.description);
-	} else if (e instanceof HttpError) {
-		console.log("Could not contact Telegram:", e);
-	} else {
-		console.log("Unknown error:", e);
-	}
+  const { ctx } = err;
+  console.log(`Error while handling update ${ctx.update.update_id}:`);
+  bot.api.sendMessage(<string>process.env.MY_USER_ID, `broke 💀\n\n${err}`, {
+    parse_mode: "HTML",
+  });
+  const e = err.error;
+  if (e instanceof GrammyError) {
+    console.log("Error in request:", e.description);
+  } else if (e instanceof HttpError) {
+    console.log("Could not contact Telegram:", e);
+  } else {
+    console.log("Unknown error:", e);
+  }
 });
 
 //* ---------------- MIDDLEWARES ----------------
 
 // Setting default session for user
 function initialSesionValues(): SessionData {
-	return {
-		dataForAdd: [],
-		waitingForAnnouncementMessage: false,
-		waitingForAuthCode: false,
-		waitingForClearConfirmation: false,
-		waitingForDefaultDatabaseSelection: false,
-		waitingForPropiertyValue: false,
-	};
+  return {
+    dataForAdd: [],
+    waitingForAnnouncementMessage: false,
+    waitingForAuthCode: false,
+    waitingForClearConfirmation: false,
+    waitingForDefaultDatabaseSelection: false,
+    waitingForPropiertyValue: false,
+  };
 }
 
 bot.use(session({ initial: initialSesionValues }));
@@ -111,33 +111,33 @@ bot.command("checkauthcode", checkAuthCodeCommand);
 //* ---------------- EVENTS ----------------
 
 const eventFunctionContext = async (
-	eventFunction: Function,
-	ctx: BotContext
+  eventFunction: Function,
+  ctx: BotContext,
 ) => {
-	try {
-		await eventFunction(ctx);
-	} catch (error: any) {
-		console.log(error);
-		const text = error?.message && errorMessages[error.message];
-		reportError(ctx, text);
-	}
+  try {
+    await eventFunction(ctx);
+  } catch (error: any) {
+    console.log(error);
+    const text = error?.message && errorMessages[error.message];
+    reportError(ctx, text);
+  }
 };
 
 bot.on(":text", (ctx) => eventFunctionContext(onText, ctx));
 bot.on("callback_query:data", (ctx) =>
-	eventFunctionContext(onCallbackQuery, ctx)
+  eventFunctionContext(onCallbackQuery, ctx),
 );
 bot.on(":photo", (ctx) => eventFunctionContext(onPhoto, ctx));
 bot.on(":sticker", (ctx) => {
-	reply(ctx, "❤️");
+  reply(ctx, "❤️");
 });
 
 process.once("SIGINT", () => bot.stop());
 process.once("SIGTERM", () => bot.stop());
 
 (async () => {
-	await dbConnection();
-	bot.start();
+  await dbConnection();
+  bot.start();
 })();
 
 // Fuck Telegraf
