@@ -15,19 +15,19 @@ router.post('/', async (req, res) => {
       }
 
       const response = await axios({
-				method: "POST",
-        url: "https://api.notion.com/v1/oauth/token",
+        method: 'POST',
+        url: 'https://api.notion.com/v1/oauth/token',
         origin: 'https://open-telegram-to-notion.vercel.app/auth',
-				data: reqData,
-				auth: {
-				  username: Buffer.from(
-				    process.env.NOTION_INTEGRATION_ID.toString('base64')
-				  ),
-				  password: Buffer.from(
-				    process.env.NOTION_INTEGRATION_SECRET.toString('base64')
-				  )
-				} // THANK YOU https://stackoverflow.com/questions/67534080/notion-api-invalid-client-oauth-integration/68699544#68699544?newreg=949504cf865c4a52b2c0ce7afe936c9b
-			});
+        data: reqData,
+        auth: {
+          username: Buffer.from(
+            process.env.NOTION_INTEGRATION_ID.toString('base64')
+          ),
+          password: Buffer.from(
+            process.env.NOTION_INTEGRATION_SECRET.toString('base64')
+          )
+        } // THANK YOU https://stackoverflow.com/questions/67534080/notion-api-invalid-client-oauth-integration/68699544#68699544?newreg=949504cf865c4a52b2c0ce7afe936c9b
+      })
 
       console.log(response.status) // 400 in positive case
       console.log(response.data)
