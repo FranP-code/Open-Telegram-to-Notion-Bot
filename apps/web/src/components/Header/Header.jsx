@@ -2,84 +2,76 @@ import icon from './icon.png'
 import styled from 'styled-components'
 import { Link } from 'wouter'
 
-function Header() {
+function Header () {
+  const HeaderStyles = styled.header`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-    const HeaderStyles = styled.header`
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    padding: 3vh 2vw;
 
-        padding: 3vh 2vw;
+    border-bottom: 1px solid #eee;
 
-        border-bottom: 1px solid #eee;
+    user-select: none;
 
-        user-select: none;
-        
-        .logotype {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            
-            img {
-                width: 80px;
-                height: 80px;
+    .logotype {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
 
-                margin-right: 1vw;
-                
-                &:hover {
-                    animation: rotate-image 0.5s cubic-bezier(1.000, 0.000, 0.000, 1.000) both;
-                }
-            }
+      img {
+        width: 80px;
+        height: 80px;
 
-            @keyframes rotate-image {
-                0% {
-                    transform: rotate(0deg)
-                }
+        margin-right: 1vw;
 
-                100% {
-                    transform: rotate(360deg)
-                }
-            }
+        &:hover {
+          animation: rotate-image 0.5s cubic-bezier(1, 0, 0, 1) both;
+        }
+      }
+
+      @keyframes rotate-image {
+        0% {
+          transform: rotate(0deg);
         }
 
-        .links {
-            display: flex;
-            flex-direction: column;
-
-            a {
-                color: #000;
-                font-weight: bold;
-                text-decoration: none;
-
-                &:hover {
-                    text-decoration: underline;
-                }
-            }
+        100% {
+          transform: rotate(360deg);
         }
+      }
+    }
 
-    `
+    .links {
+      display: flex;
+      flex-direction: column;
 
-    return (
-        <HeaderStyles>
-            <Link href='/'>
-                <div className='logotype'>
-                    <img src={icon} alt="Page icon"></img>
-                    <h1>Open Telegram to Notion Bot</h1>
-                </div>
-            </Link>
-            <div className="links">
-                <Link href="/about">
-                    About
-                </Link>
-                <Link href="/privacy-policy">
-                    Privacy policy
-                </Link>
-                <Link href="/terms-of-use">
-                    Terms of use
-                </Link>
-            </div>
-        </HeaderStyles>
-    )
+      a {
+        color: #000;
+        font-weight: bold;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  `
+
+  return (
+    <HeaderStyles>
+      <Link href='/'>
+        <div className='logotype'>
+          <img src={icon} alt='Page icon' />
+          <h1>Open Telegram to Notion Bot</h1>
+        </div>
+      </Link>
+      <div className='links'>
+        <Link href='/about'>About</Link>
+        <Link href='/privacy-policy'>Privacy policy</Link>
+        <Link href='/terms-of-use'>Terms of use</Link>
+      </div>
+    </HeaderStyles>
+  )
 }
 
 export default Header
