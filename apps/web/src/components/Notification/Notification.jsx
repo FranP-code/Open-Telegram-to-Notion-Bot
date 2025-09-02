@@ -2,34 +2,33 @@ import React from 'react'
 
 import './notification-style.css'
 
-const Notification = ({notification, setNotification}) => {
-    React.useEffect(() => {
-        if (notification === false) {
-            return
-        }
+const Notification = ({ notification, setNotification }) => {
+  React.useEffect(() => {
+    if (notification === false) {
+      return
+    }
 
-        setTimeout(() => {
-            const elem = document.querySelector("#notification-element")
-            elem.classList.remove('fade-in')
-            elem.classList.add('fade-out')
-        }, 2000)
+    setTimeout(() => {
+      const elem = document.querySelector('#notification-element')
+      elem.classList.remove('fade-in')
+      elem.classList.add('fade-out')
+    }, 2000)
 
-        setTimeout(() => {
-            setNotification(false)
-        }, 2400)
+    setTimeout(() => {
+      setNotification(false)
+    }, 2400)
+  }, [notification])
 
-    }, [notification])
-    
-    return (
-        <>
-            {
-                notification ?
-                    <div className="notification fade-in" id="notification-element">
-                        <p>{notification}</p>
-                    </div>
-                : null
-            }
-        </>
+  return (
+    <>
+      {notification
+        ? (
+          <div className='notification fade-in' id='notification-element'>
+            <p>{notification}</p>
+          </div>
+          )
+        : null}
+    </>
   )
 }
 
