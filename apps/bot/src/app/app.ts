@@ -42,6 +42,8 @@ import { checkAuthCodeCommand } from "./commands/checkAuthCode";
 
 type MyContext = Context & SessionFlavor<SessionData>;
 
+require("dotenv").config();
+
 const bot = new Bot<MyContext>(
   <string>(
     (process.env.OLD_BOT === "true"
