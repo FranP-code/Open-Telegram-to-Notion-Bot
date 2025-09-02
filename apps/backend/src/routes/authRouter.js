@@ -16,7 +16,8 @@ router.post('/', async (req, res) => {
 
       const response = await axios({
 				method: "POST",
-				url: "https://api.notion.com/v1/oauth/token",
+        url: "https://api.notion.com/v1/oauth/token",
+        origin: 'https://open-telegram-to-notion.vercel.app/auth',
 				data: reqData,
 				auth: {
 				  username: Buffer.from(
