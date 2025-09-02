@@ -1,0 +1,13 @@
+version = 1
+
+[[analyzers]]
+name = "javascript"
+
+  [analyzers.meta]
+  environment = ["nodejs"]
+
+[[transformers]]
+name = "standardjs"
+
+[[transformers]]
+name = "prettier"

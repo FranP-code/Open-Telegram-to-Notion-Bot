@@ -1,0 +1,10 @@
+version: "2.9"
+
+services:
+   app:
+      build: .
+      volumes:
+        - .:/usr/src
+        - /usr/src/node_modules
+      environment:
+        NODE_ENV: ${NODE_ENV}
