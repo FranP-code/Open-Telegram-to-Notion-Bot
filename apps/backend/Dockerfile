@@ -1,17 +1,35 @@
-FROM alpine:latest
+# Use official Node 22 Alpine image
+FROM node:22-alpine
+
+# Build args
 ARG NOTION_INTEGRATION_ID
 ARG NOTION_INTEGRATION_SECRET
-ARG PORT
-ARG NODE_ENV
+ARG PORT=3000
+ARG NODE_ENV=production
 
-RUN apk add --update nodejs npm
-RUN npm install --global yarn
+# Set environment variables
+ENV NOTION_INTEGRATION_ID=${NOTION_INTEGRATION_ID}
+ENV NOTION_INTEGRATION_SECRET=${NOTION_INTEGRATION_SECRET}
+ENV PORT=${PORT}
+ENV NODE_ENV=${NODE_ENV}
 
-COPY [".", "/usr/src"]
-WORKDIR "/usr/src"
+# Enable pnpm via corepack
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-RUN yarn
+# Set working directory
+WORKDIR /usr/src
 
+# Copy dependency files first for caching
+COPY package.json pnpm-lock.yaml* ./
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Copy rest of the source
+COPY . .
+
+# Expose port
 EXPOSE ${PORT}
 
-CMD if [ ${NODE_ENV} = "development" ] ; then yarn run dev ; else yarn run start PORT=${PORT}; fi
+# Start command
+CMD if [ "$NODE_ENV" = "development" ]; then pnpm dev; else PORT=$PORT pnpm start; fi
