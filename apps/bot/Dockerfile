@@ -1,13 +1,24 @@
-FROM mhart/alpine-node:14
+# Use official Node 22 Alpine image
+FROM node:22-alpine
 
-RUN apk add curl
+# Install pnpm globally
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-COPY [".", "/usr/src"]
+# Set working directory
+WORKDIR /usr/src
 
-WORKDIR "/usr/src"
+# Copy only package files first for better caching
+COPY package.json pnpm-lock.yaml* ./
 
-RUN yarn
+# Install dependencies
+RUN pnpm install --frozen-lockfile
 
-ARG NODE_ENV
+# Copy the rest of the source
+COPY . .
 
-CMD if [ "$NODE_ENV" = "develop" ] ; then yarn run dev ; else yarn run start ; fi
+# Pass NODE_ENV at build/run time
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
+
+# Default command
+CMD if [ "$NODE_ENV" = "develop" ]; then pnpm dev; else pnpm start; fi
