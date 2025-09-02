@@ -1,49 +1,75 @@
-<div align="center">
-  <h1>
-    <img
-      src="https://i.ibb.co/v1bS7pj/icon-rounded-box.png"
-      width="150px"
-    >
-    <br/>
-    Open Telegram to Notion Bot
-  </h1>
-</div>
+# my-better-t-app
 
-<p align="center"> <a href="https://t.me/OpenTelegramToNotionBot" target="_blank"><img alt="" src="https://img.shields.io/badge/Telegram-4797ff?style=normal&logo=Telegram&logoColor=white" style="vertical-align:center" /></a></p>
-
-<p align="center">
-    <img src="https://img.shields.io/github/issues/FranP-Code/Telegram-to-Notion-Bot?style=flat-square">
-    <img src="https://img.shields.io/github/issues-pr/FranP-Code/Telegram-To-Notion-Bot?style=flat-square">
-    <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/FranP-Code/Telegram-To-Notion-Bot?style=flat-square">
-    <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/FranP-Code/Telegram-To-Notion-Bot?style=flat-square">
-    <img alt="GitHub forks" src="https://img.shields.io/github/forks/FranP-Code/Telegram-To-Notion-Bot?style=flat-square">
-</p>
-
-## Description
-This bot receive the text that you send and store it on one selected database of Notion.
+This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Router, Hono, TRPC, and more.
 
 ## Features
-- Save texts on your Notion database
-- Save images on your Notion database
-- Define the properties of the new page of your database
-- 100% Open Source and Free
-## Screenshots
- <img src="https://i.ibb.co/z73qrqg/index.png">
- <img src="https://i.ibb.co/pJ10w9j/Telegram-To-Notion-Bot-Demo-Acelerated.gif">
 
-## Tech Used
- ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
- ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
- ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
- <a href="https://railway.app">
- ![Railway](https://img.shields.io/badge/railway-444.svg?style=for-the-badge&logo=railway&logoColor=white)
- </a>
- <a href="https://grammy.dev">![Grammy](https://img.shields.io/badge/GrammY-009dca.svg?style=for-the-badge&logo=grammy&logoColor=white)</a>
+- **TypeScript** - For type safety and improved developer experience
+- **TanStack Router** - File-based routing with full type safety
+- **TailwindCSS** - Utility-first CSS for rapid UI development
+- **shadcn/ui** - Reusable UI components
+- **Hono** - Lightweight, performant server framework
+- **tRPC** - End-to-end type-safe APIs
+- **Bun** - Runtime environment
+- **Drizzle** - TypeScript-first ORM
+- **SQLite/Turso** - Database engine
+- **Authentication** - Better-Auth
+- **Turborepo** - Optimized monorepo build system
 
-## Additional
+## Getting Started
 
-Dont forget to check also:
-- [Open Telegram to Notion Bot website's](https://github.com/FranP-code/Open-Telegram-to-Notion-Website) repository
-- [Open Telegram to Notion Bot backend](https://github.com/FranP-code/Open-Telegram-to-Notion-Backend) repository
-- [Open Telegram to Notion Roadmap](https://franpcode.notion.site/franpcode/3ef68732c1f9426dbdaba21e20dc3509?v=660b09746d4d4ede877a477d3b628f02)
-<!-- </> with 💛 by readMD (https://readmd.itsvg.in) -->
+First, install the dependencies:
+
+```bash
+bun install
+```
+## Database Setup
+
+This project uses SQLite with Drizzle ORM.
+
+1. Start the local SQLite database:
+```bash
+cd apps/server && bun db:local
+```
+
+
+2. Update your `.env` file in the `apps/server` directory with the appropriate connection details if needed.
+
+3. Apply the schema to your database:
+```bash
+bun db:push
+```
+
+
+Then, run the development server:
+
+```bash
+bun dev
+```
+
+Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
+The API is running at [http://localhost:3000](http://localhost:3000).
+
+
+
+
+
+## Project Structure
+
+```
+my-better-t-app/
+├── apps/
+│   ├── web/         # Frontend application (React + TanStack Router)
+│   └── server/      # Backend API (Hono, TRPC)
+```
+
+## Available Scripts
+
+- `bun dev`: Start all applications in development mode
+- `bun build`: Build all applications
+- `bun dev:web`: Start only the web application
+- `bun dev:server`: Start only the server
+- `bun check-types`: Check TypeScript types across all apps
+- `bun db:push`: Push schema changes to database
+- `bun db:studio`: Open database studio UI
+- `cd apps/server && bun db:local`: Start the local SQLite database

@@ -1,52 +1,20 @@
 {
-	"name": "telegram-to-notion-bot",
-	"version": "1.0.0",
-	"main": "src/app/app.js",
-	"scripts": {
-		"start": "npx tsc && node dist/app/app.js",
-		"dev": "nodemon -L"
-	},
-	"keywords": [
-		"telegram",
-		"bot",
-		"notion",
-		"node.js",
-		"telegraf"
+	"name": "my-better-t-app",
+	"private": true,
+	"workspaces": [
+		"apps/*",
+		"packages/*"
 	],
-	"author": "FranP-Code",
-	"license": "ISC",
-	"dependencies": {
-		"@notionhq/client": "^1.0.4",
-		"axios": "^0.27.2",
-		"dotenv": "^16.0.0",
-		"grammy": "1.7.2",
-		"moment": "^2.29.4",
-		"mongoose": "^6.5.2"
+	"scripts": {
+		"dev": "turbo dev",
+		"build": "turbo build",
+		"check-types": "turbo check-types",
+		"dev:web": "turbo -F web dev",
+		"dev:server": "turbo -F server dev"
 	},
+	"dependencies": {},
 	"devDependencies": {
-		"@typescript-eslint/eslint-plugin": "^5.13.0",
-		"@typescript-eslint/parser": "^5.0.0",
-		"eslint": "^8.0.1",
-		"eslint-config-airbnb-base": "^15.0.0",
-		"eslint-config-airbnb-typescript": "^17.0.0",
-		"eslint-config-prettier": "^8.6.0",
-		"eslint-config-standard-with-typescript": "^33.0.0",
-		"eslint-plugin-import": "^2.25.2",
-		"eslint-plugin-n": "^15.0.0",
-		"eslint-plugin-prettier": "^4.2.1",
-		"eslint-plugin-promise": "^6.0.0",
-		"nodemon": "^2.0.19",
-		"prettier": "^2.8.3",
-		"ts-node": "^10.9.1",
-		"typescript": "*"
+		"turbo": "^2.5.4"
 	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/FranP-code/Telegram-to-Notion-Bot.git"
-	},
-	"bugs": {
-		"url": "https://github.com/FranP-code/Telegram-to-Notion-Bot/issues"
-	},
-	"homepage": "https://github.com/FranP-code/Telegram-to-Notion-Bot#readme",
-	"description": ""
+	"packageManager": "pnpm@10.15.1"
 }
